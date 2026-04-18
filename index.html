@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>309 Poker Club - 數據中心 v4.5</title>
+    <title>309 Poker Club - 數據中心 v4.6</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #3498db; --success: #27ae60; --warning: #f39c12; --danger: #e74c3c; --dark: #2c3e50; --bg: #f0f2f5; }
@@ -16,9 +16,9 @@
         .section-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px; border-left: 5px solid var(--primary); padding-left: 12px; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: #f1f4f8; color: #4a5568; padding: 12px 8px; font-size: 13px; }
+        th { background: #f1f4f8; color: #4a5568; padding: 12px 8px; font-size: 13px; text-align: center; }
         td { padding: 10px 5px; border-bottom: 1px solid #edf2f7; text-align: center; }
-        .player-select { font-size: 18px !important; font-weight: bold; padding: 8px; border: 2px solid #cbd5e0; border-radius: 8px; width: 145px; background: white; }
+        .player-select { font-size: 18px !important; font-weight: bold; padding: 8px; border: 2px solid #cbd5e0; border-radius: 8px; width: 150px; background: white; }
         .buyin, .endChips { font-size: 18px !important; font-weight: bold; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px; width: 85px; }
         .profit, .final { font-size: 19px !important; font-weight: 800; font-family: 'Consolas', monospace; }
         .result-neg { color: #e53e3e !important; }
@@ -28,7 +28,6 @@
         .btn-confirm { background: var(--success); color: white; }
         .btn-add { background: #ebf8ff; color: var(--primary); border: 1px solid var(--primary); }
         .tag { background: #eee; padding: 4px 10px; border-radius: 15px; font-size: 12px; margin-right: 5px; display: inline-block; }
-        .filter-group { display: flex; align-items: center; gap: 10px; padding: 15px; background: #fff; border-radius: 10px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .modal-content { background: white; margin: 10vh auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; }
     </style>
@@ -61,17 +60,12 @@
         </div>
         <div style="margin-top:15px; display:flex; justify-content:space-between;">
             <button class="btn btn-add" style="background:#2c3e50; color:white;" onclick="addRow()">+ 新增玩家</button>
-            <button class="btn" onclick="resetCurrentTable()">🔄 重置</button>
+            <button class="btn" onclick="resetCurrentTable()">🔄 重置表格</button>
         </div>
     </div>
 
     <div id="bottomArea">
         <div class="section-header"><h3>🏆 長期總結算 (雲端數據)</h3></div>
-        <div class="filter-group">
-            <input type="date" id="startDate" onchange="renderHistory()"> 至 
-            <input type="date" id="endDate" onchange="renderHistory()">
-            <button class="btn" onclick="resetFilter()">全部數據</button>
-        </div>
         <div class="table-wrapper">
             <table>
                 <thead><tr><th>玩家</th><th>場次</th><th>累計盈虧</th><th>皇冠 👑</th></tr></thead>
@@ -84,7 +78,7 @@
 
 <div id="playerModal" class="modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
-        <h3 id="modalPlayerName" style="border-bottom: 2px solid var(--primary); padding-bottom:10px;"></h3>
+        <h3 id="modalPlayerName"></h3>
         <div style="max-height: 400px; overflow-y: auto;"><table style="width: 100%;"><tbody id="modalTableBody"></tbody></table></div>
         <button class="btn" style="width:100%; margin-top:15px;" onclick="closeModal()">關閉</button>
     </div>
@@ -100,23 +94,24 @@
         return JSON.parse(localStorage.getItem('poker_players') || "[]");
     }
 
-    // --- 核心修正：嚴密的下拉選單同步邏輯 ---
+    // --- 核心修正：強制刷新邏輯 ---
     function updateAllDropdowns() {
         const selects = document.querySelectorAll('.player-select');
         const masterList = getStoredPlayers();
         
-        // 1. 找出目前所有格子「已經選了誰」
-        const currentlySelected = Array.from(selects).map(s => s.value).filter(v => v !== "");
+        // 紀錄目前每一行已經選了誰
+        const selectedValues = Array.from(selects).map(s => s.value);
 
-        selects.forEach(select => {
-            const thisValue = select.value; // 當前這格選了誰
+        selects.forEach((select, index) => {
+            const currentSelected = select.value; // 這格目前選的人
             let html = `<option value="">-- 請選擇 --</option>`;
             
             masterList.forEach(name => {
-                // 如果這個名字「沒被選過」或者是「這格現在選的人」，就顯示出來
-                const isSelectedElsewhere = currentlySelected.includes(name) && name !== thisValue;
-                if (!isSelectedElsewhere) {
-                    html += `<option value="${name}" ${name === thisValue ? 'selected' : ''}>${name}</option>`;
+                // 如果這個名字被別行選走了，就隱藏；但如果是自己這行選的，就保留
+                const isSelectedByOthers = selectedValues.some((val, i) => val === name && i !== index);
+                
+                if (!isSelectedByOthers) {
+                    html += `<option value="${name}" ${name === currentSelected ? 'selected' : ''}>${name}</option>`;
                 }
             });
             select.innerHTML = html;
@@ -131,14 +126,22 @@
         } else { alert("密碼錯誤"); }
     }
 
-    function addRow() {
+    function addRow(prefill = null) {
         const row = document.getElementById('tableBody').insertRow();
         row.innerHTML = `<td><select class="player-select" onchange="updateAllDropdowns(); saveDraft();"></select></td>
             <td><input type="number" class="buyin" placeholder="0" oninput="calculate(this)"></td>
-            <td class="chips">0</td><td><input type="number" class="endChips" placeholder="0" oninput="calculate(this)"></td>
+            <td class="chips" style="color:#718096; font-size:14px;">0</td>
+            <td><input type="number" class="endChips" placeholder="0" oninput="calculate(this)"></td>
             <td class="profit">0</td><td class="final">0</td>
-            <td><span style="cursor:pointer;color:#ccc;" onclick="this.closest('tr').remove(); updateAllDropdowns(); auditChips();">✕</span></td>`;
-        updateAllDropdowns();
+            <td><span style="cursor:pointer;color:#ccc;font-size:20px;" onclick="this.closest('tr').remove(); updateAllDropdowns(); auditChips(); saveDraft();">✕</span></td>`;
+        
+        if (prefill) {
+            row.querySelector('.player-select').value = prefill.name;
+            row.querySelector('.buyin').value = prefill.buyin;
+            row.querySelector('.endChips').value = prefill.end;
+        }
+        
+        updateAllDropdowns(); // 每加一行就刷新一次選單過濾
         return row;
     }
 
@@ -150,10 +153,15 @@
         row.querySelector('.chips').innerText = bc;
         const p = (e - bc) / 2;
         const f = p - 100;
-        row.querySelector('.profit').innerText = p >= 0 ? p : `(${Math.abs(p)})`;
-        row.querySelector('.profit').className = "profit " + (p >= 0 ? "result-pos" : "result-neg");
-        row.querySelector('.final').innerText = f >= 0 ? f : `(${Math.abs(f)})`;
-        row.querySelector('.final').className = "final " + (f >= 0 ? "result-pos" : "result-neg");
+        
+        const pCell = row.querySelector('.profit');
+        pCell.innerText = p >= 0 ? p : `(${Math.abs(p)})`;
+        pCell.className = "profit " + (p >= 0 ? "result-pos" : "result-neg");
+        
+        const fCell = row.querySelector('.final');
+        fCell.innerText = f >= 0 ? f : `(${Math.abs(f)})`;
+        fCell.className = "final " + (f >= 0 ? "result-pos" : "result-neg");
+        
         auditChips(); saveDraft();
     }
 
@@ -161,7 +169,10 @@
         let b = 0, e = 0;
         document.querySelectorAll('.chips').forEach(td => b += parseFloat(td.innerText) || 0);
         document.querySelectorAll('.endChips').forEach(i => e += parseFloat(i.value) || 0);
-        document.getElementById('chipDiff').innerText = (e - b);
+        const diff = e - b;
+        const el = document.getElementById('chipDiff');
+        el.innerText = diff;
+        el.style.color = (diff === 0) ? "#63b3ed" : "#fc8181";
     }
 
     function addPlayerToList() {
@@ -171,7 +182,8 @@
             if (!list.includes(name)) {
                 list.push(name);
                 localStorage.setItem('poker_players', JSON.stringify(list));
-                renderPlayerTags(); updateAllDropdowns();
+                renderPlayerTags(); 
+                updateAllDropdowns(); // 錄入後立刻讓選單出現新名字
             }
         }
         document.getElementById('newName').value = '';
@@ -190,15 +202,9 @@
     }
 
     function renderHistory() {
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-        const filtered = historyData.filter(d => {
-            const dt = d.date.split('T')[0];
-            return (!start || dt >= start) && (!end || dt <= end);
-        });
         const summary = {};
         const batches = {};
-        filtered.forEach(item => {
+        historyData.forEach(item => {
             if (!summary[item.name]) summary[item.name] = { count: 0, total: 0 };
             summary[item.name].count++;
             summary[item.name].total += parseFloat(item.score);
@@ -217,18 +223,18 @@
                 <td>${summary[name].count}</td><td class="${t>=0?'result-pos':'result-neg'}">${t>=0?t.toFixed(0):'('+Math.abs(t).toFixed(0)+')'}</td>
                 <td style="color:var(--warning);">${crowns[name] ? '👑 '+crowns[name] : '-'}</td></tr>`;
         }).join('');
-        updateTrendChart(filtered);
+        updateTrendChart();
     }
 
-    function updateTrendChart(data) {
+    function updateTrendChart() {
         const ctx = document.getElementById('trendChart').getContext('2d');
-        const dates = [...new Set(data.map(d => d.date.split('T')[0]))].sort();
+        const dates = [...new Set(historyData.map(d => d.date.split('T')[0]))].sort();
         const counts = {}; historyData.forEach(d => counts[d.name] = (counts[d.name] || 0) + 1);
         const core = Object.keys(counts).filter(n => counts[n] >= 7);
         const datasets = core.map(name => {
             let cum = 0;
             const pts = dates.map(dt => {
-                const rec = data.find(d => d.name === name && d.date.split('T')[0] === dt);
+                const rec = historyData.find(d => d.name === name && d.date.split('T')[0] === dt);
                 if (rec) cum += parseFloat(rec.score);
                 return cum;
             });
@@ -258,7 +264,6 @@
     }
 
     function closeModal() { document.getElementById('playerModal').style.display = "none"; }
-    function resetFilter() { document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; renderHistory(); }
     function resetCurrentTable() { if(confirm("確定重置表格？")) { localStorage.removeItem('poker_draft_v4'); location.reload(); } }
 
     async function confirmSave() {
@@ -267,7 +272,8 @@
         const bid = 'B'+Date.now();
         document.querySelectorAll('#tableBody tr').forEach(r => {
             const n = r.querySelector('.player-select').value;
-            const s = parseFloat(r.querySelector('.final').innerText.replace('(','-').replace(')',''));
+            const sText = r.querySelector('.final').innerText;
+            const s = parseFloat(sText.replace('(','-').replace(')',''));
             if(n) payload.push({ date, name: n, score: s, batchId: bid });
         });
         if(!payload.length) return;
@@ -284,14 +290,11 @@
         renderPlayerTags(); fetchFromCloud();
         const draft = JSON.parse(localStorage.getItem('poker_draft_v4') || "[]");
         if (draft.length > 0) {
-            draft.forEach(d => {
-                const row = addRow();
-                row.querySelector('.player-select').value = d.name;
-                row.querySelector('.buyin').value = d.buyin;
-                row.querySelector('.endChips').value = d.end;
-                calculate(row.querySelector('.buyin'));
-            });
-        } else { for(let i=0; i<6; i++) addRow(); }
+            draft.forEach(d => addRow(d));
+            document.querySelectorAll('#tableBody tr').forEach(r => calculate(r.querySelector('.buyin')));
+        } else {
+            for(let i=0; i<6; i++) addRow();
+        }
         updateAllDropdowns();
     };
 </script>
