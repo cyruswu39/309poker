@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>309 Poker Club - 數據中心</title>
+    <title>309 Poker Club - 數據中心 v4.5</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #3498db; --success: #27ae60; --warning: #f39c12; --danger: #e74c3c; --dark: #2c3e50; --bg: #f0f2f5; }
@@ -11,7 +11,6 @@
         .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .admin-toggle-bar { display: flex; justify-content: flex-end; margin-bottom: 15px; }
         .btn-admin { background: #edf2f7; color: #718096; padding: 10px 20px; font-size: 14px; border-radius: 8px; cursor: pointer; border: 1px solid #cbd5e0; font-weight: bold; }
-        .btn-admin.active { background: #e53e3e; color: white; border-color: #c53030; }
         #topArea { display: none; margin-bottom: 30px; padding: 20px; background: #fff; border: 2px solid #edf2f7; border-radius: 12px; }
         .player-manager { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px; border-left: 5px solid var(--primary); padding-left: 12px; }
@@ -19,8 +18,8 @@
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th { background: #f1f4f8; color: #4a5568; padding: 12px 8px; font-size: 13px; }
         td { padding: 10px 5px; border-bottom: 1px solid #edf2f7; text-align: center; }
-        .player-select { font-size: 18px !important; font-weight: bold; padding: 8px; border: 2px solid #cbd5e0; border-radius: 8px; width: 140px; background: white; }
-        .buyin, .endChips { font-size: 18px !important; font-weight: bold; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px; width: 80px; }
+        .player-select { font-size: 18px !important; font-weight: bold; padding: 8px; border: 2px solid #cbd5e0; border-radius: 8px; width: 145px; background: white; }
+        .buyin, .endChips { font-size: 18px !important; font-weight: bold; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px; width: 85px; }
         .profit, .final { font-size: 19px !important; font-weight: 800; font-family: 'Consolas', monospace; }
         .result-neg { color: #e53e3e !important; }
         .result-pos { color: #38a169 !important; }
@@ -28,9 +27,7 @@
         .btn { padding: 10px 16px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; }
         .btn-confirm { background: var(--success); color: white; }
         .btn-add { background: #ebf8ff; color: var(--primary); border: 1px solid var(--primary); }
-        .tag { background: #eee; padding: 4px 10px; border-radius: 15px; font-size: 12px; margin-right: 5px; margin-bottom: 5px; display: inline-block; }
-        
-        /* 篩選與彈窗樣式 */
+        .tag { background: #eee; padding: 4px 10px; border-radius: 15px; font-size: 12px; margin-right: 5px; display: inline-block; }
         .filter-group { display: flex; align-items: center; gap: 10px; padding: 15px; background: #fff; border-radius: 10px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .modal-content { background: white; margin: 10vh auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; }
@@ -69,7 +66,7 @@
     </div>
 
     <div id="bottomArea">
-        <div class="section-header"><h3>🏆 長期總結算 (雲端)</h3></div>
+        <div class="section-header"><h3>🏆 長期總結算 (雲端數據)</h3></div>
         <div class="filter-group">
             <input type="date" id="startDate" onchange="renderHistory()"> 至 
             <input type="date" id="endDate" onchange="renderHistory()">
@@ -88,11 +85,7 @@
 <div id="playerModal" class="modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
         <h3 id="modalPlayerName" style="border-bottom: 2px solid var(--primary); padding-bottom:10px;"></h3>
-        <div style="max-height: 400px; overflow-y: auto;">
-            <table style="width: 100%;">
-                <tbody id="modalTableBody"></tbody>
-            </table>
-        </div>
+        <div style="max-height: 400px; overflow-y: auto;"><table style="width: 100%;"><tbody id="modalTableBody"></tbody></table></div>
         <button class="btn" style="width:100%; margin-top:15px;" onclick="closeModal()">關閉</button>
     </div>
 </div>
@@ -104,16 +97,28 @@
     let trendChart = null;
 
     function getStoredPlayers() {
-        const list = JSON.parse(localStorage.getItem('poker_players') || "[]");
-        return Array.isArray(list) ? list : [];
+        return JSON.parse(localStorage.getItem('poker_players') || "[]");
     }
 
+    // --- 核心修正：嚴密的下拉選單同步邏輯 ---
     function updateAllDropdowns() {
-        const list = getStoredPlayers();
-        document.querySelectorAll('.player-select').forEach(select => {
-            const currentVal = select.value;
+        const selects = document.querySelectorAll('.player-select');
+        const masterList = getStoredPlayers();
+        
+        // 1. 找出目前所有格子「已經選了誰」
+        const currentlySelected = Array.from(selects).map(s => s.value).filter(v => v !== "");
+
+        selects.forEach(select => {
+            const thisValue = select.value; // 當前這格選了誰
             let html = `<option value="">-- 請選擇 --</option>`;
-            list.forEach(name => html += `<option value="${name}" ${name === currentVal ? 'selected' : ''}>${name}</option>`);
+            
+            masterList.forEach(name => {
+                // 如果這個名字「沒被選過」或者是「這格現在選的人」，就顯示出來
+                const isSelectedElsewhere = currentlySelected.includes(name) && name !== thisValue;
+                if (!isSelectedElsewhere) {
+                    html += `<option value="${name}" ${name === thisValue ? 'selected' : ''}>${name}</option>`;
+                }
+            });
             select.innerHTML = html;
         });
     }
@@ -121,38 +126,20 @@
     function toggleAdminMode() {
         if (prompt("密碼：") === ADMIN_PW) {
             document.getElementById('topArea').style.display = 'block';
-            document.getElementById('adminModeBtn').innerText = "🔒 已登入";
+            document.getElementById('adminModeBtn').innerText = "🔒 管理模式中";
             updateAllDropdowns();
-        } else { alert("錯誤"); }
+        } else { alert("密碼錯誤"); }
     }
 
     function addRow() {
         const row = document.getElementById('tableBody').insertRow();
-        row.innerHTML = `<td><select class="player-select" onchange="saveDraft()"></select></td>
+        row.innerHTML = `<td><select class="player-select" onchange="updateAllDropdowns(); saveDraft();"></select></td>
             <td><input type="number" class="buyin" placeholder="0" oninput="calculate(this)"></td>
             <td class="chips">0</td><td><input type="number" class="endChips" placeholder="0" oninput="calculate(this)"></td>
             <td class="profit">0</td><td class="final">0</td>
-            <td><span style="cursor:pointer;color:#ccc;" onclick="this.closest('tr').remove(); auditChips();">✕</span></td>`;
+            <td><span style="cursor:pointer;color:#ccc;" onclick="this.closest('tr').remove(); updateAllDropdowns(); auditChips();">✕</span></td>`;
         updateAllDropdowns();
         return row;
-    }
-
-    function addPlayerToList() {
-        const name = document.getElementById('newName').value.trim();
-        if (name) {
-            let list = getStoredPlayers();
-            if (!list.includes(name)) {
-                list.push(name);
-                localStorage.setItem('poker_players', JSON.stringify(list));
-                renderPlayerTags(); updateAllDropdowns();
-            }
-        }
-        document.getElementById('newName').value = '';
-    }
-
-    function renderPlayerTags() {
-        const list = getStoredPlayers();
-        document.getElementById('playerTags').innerHTML = list.map(n => `<span class="tag">${n}</span>`).join('');
     }
 
     function calculate(el) {
@@ -177,12 +164,21 @@
         document.getElementById('chipDiff').innerText = (e - b);
     }
 
-    function saveDraft() {
-        const data = [];
-        document.querySelectorAll('#tableBody tr').forEach(row => {
-            data.push({ name: row.querySelector('.player-select').value, buyin: row.querySelector('.buyin').value, end: row.querySelector('.endChips').value });
-        });
-        localStorage.setItem('poker_draft_v4', JSON.stringify(data));
+    function addPlayerToList() {
+        const name = document.getElementById('newName').value.trim();
+        if (name) {
+            let list = getStoredPlayers();
+            if (!list.includes(name)) {
+                list.push(name);
+                localStorage.setItem('poker_players', JSON.stringify(list));
+                renderPlayerTags(); updateAllDropdowns();
+            }
+        }
+        document.getElementById('newName').value = '';
+    }
+
+    function renderPlayerTags() {
+        document.getElementById('playerTags').innerHTML = getStoredPlayers().map(n => `<span class="tag">${n}</span>`).join('');
     }
 
     async function fetchFromCloud() {
@@ -200,7 +196,6 @@
             const dt = d.date.split('T')[0];
             return (!start || dt >= start) && (!end || dt <= end);
         });
-
         const summary = {};
         const batches = {};
         filtered.forEach(item => {
@@ -210,23 +205,17 @@
             if (!batches[item.batchId]) batches[item.batchId] = [];
             batches[item.batchId].push(item);
         });
-
         const crowns = {};
         Object.values(batches).forEach(list => {
             let max = Math.max(...list.map(p => parseFloat(p.score)));
             if (max > 0) list.forEach(p => { if(parseFloat(p.score) === max) crowns[p.name] = (crowns[p.name] || 0) + 1; });
         });
-
         const sorted = Object.keys(summary).sort((a, b) => summary[b].total - summary[a].total);
         document.getElementById('historyBody').innerHTML = sorted.map(name => {
             const t = summary[name].total;
-            const c = crowns[name] || 0;
-            return `<tr>
-                <td style="color:var(--primary); font-weight:bold; cursor:pointer;" onclick="showPlayerDetail('${name}')">${name}</td>
-                <td>${summary[name].count}</td>
-                <td class="${t>=0?'result-pos':'result-neg'}">${t.toFixed(0)}</td>
-                <td style="color:var(--warning);">${c > 0 ? '👑 '+c : '-'}</td>
-            </tr>`;
+            return `<tr><td style="color:var(--primary); font-weight:bold; cursor:pointer;" onclick="showPlayerDetail('${name}')">${name}</td>
+                <td>${summary[name].count}</td><td class="${t>=0?'result-pos':'result-neg'}">${t>=0?t.toFixed(0):'('+Math.abs(t).toFixed(0)+')'}</td>
+                <td style="color:var(--warning);">${crowns[name] ? '👑 '+crowns[name] : '-'}</td></tr>`;
         }).join('');
         updateTrendChart(filtered);
     }
@@ -234,10 +223,8 @@
     function updateTrendChart(data) {
         const ctx = document.getElementById('trendChart').getContext('2d');
         const dates = [...new Set(data.map(d => d.date.split('T')[0]))].sort();
-        const counts = {};
-        historyData.forEach(d => counts[d.name] = (counts[d.name] || 0) + 1);
+        const counts = {}; historyData.forEach(d => counts[d.name] = (counts[d.name] || 0) + 1);
         const core = Object.keys(counts).filter(n => counts[n] >= 7);
-
         const datasets = core.map(name => {
             let cum = 0;
             const pts = dates.map(dt => {
@@ -247,51 +234,64 @@
             });
             return { label: name, data: pts, fill: false, tension: 0.1, borderColor: '#'+Math.floor(Math.random()*16777215).toString(16) };
         });
-
         if (trendChart) trendChart.destroy();
         trendChart = new Chart(ctx, { type: 'line', data: { labels: dates, datasets: datasets }});
     }
 
     function showPlayerDetail(name) {
-        const modalTableBody = document.getElementById('modalTableBody');
         document.getElementById('modalPlayerName').innerText = name;
-        modalTableBody.innerHTML = historyData.filter(h => h.name === name)
-            .sort((a,b) => new Date(b.date) - new Date(a.date))
-            .map(r => `<tr><td>${r.date.split('T')[0]}</td><td class="${r.score>=0?'result-pos':'result-neg'}">${r.score}</td></tr>`).join('');
+        const filtered = historyData.filter(h => h.name === name).sort((a,b) => new Date(b.date) - new Date(a.date));
+        document.getElementById('modalTableBody').innerHTML = filtered.map(r => {
+            const s = parseFloat(r.score);
+            return `<tr><td>${r.date.split('T')[0]}</td><td class="${s>=0?'result-pos':'result-neg'}">${s>=0?s:'('+Math.abs(s)+')'}</td></tr>`
+        }).join('');
         document.getElementById('playerModal').style.display = "block";
+    }
+
+    function saveDraft() {
+        const data = Array.from(document.querySelectorAll('#tableBody tr')).map(row => ({
+            name: row.querySelector('.player-select').value,
+            buyin: row.querySelector('.buyin').value,
+            end: row.querySelector('.endChips').value
+        }));
+        localStorage.setItem('poker_draft_v4', JSON.stringify(data));
     }
 
     function closeModal() { document.getElementById('playerModal').style.display = "none"; }
     function resetFilter() { document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; renderHistory(); }
-    function resetCurrentTable() { if(confirm("重置？")) { localStorage.removeItem('poker_draft_v4'); location.reload(); } }
+    function resetCurrentTable() { if(confirm("確定重置表格？")) { localStorage.removeItem('poker_draft_v4'); location.reload(); } }
 
     async function confirmSave() {
         const payload = [];
+        const date = document.getElementById('gameDate').value;
+        const bid = 'B'+Date.now();
         document.querySelectorAll('#tableBody tr').forEach(r => {
             const n = r.querySelector('.player-select').value;
             const s = parseFloat(r.querySelector('.final').innerText.replace('(','-').replace(')',''));
-            if(n) payload.push({ date: document.getElementById('gameDate').value, name: n, score: s, batchId: 'B'+Date.now() });
+            if(n) payload.push({ date, name: n, score: s, batchId: bid });
         });
-        if(payload.length === 0) return;
+        if(!payload.length) return;
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true; btn.innerText = "⏳ 同步中...";
         try {
             await fetch(CLOUD_URL, { method: "POST", body: JSON.stringify(payload) });
-            alert("成功"); localStorage.removeItem('poker_draft_v4'); location.reload();
-        } catch(e) { alert("失敗"); }
+            alert("✅ 同步成功！"); localStorage.removeItem('poker_draft_v4'); location.reload();
+        } catch(e) { alert("❌ 儲存失敗"); btn.disabled = false; btn.innerText = "💾 儲存到雲端"; }
     }
 
     window.onload = () => {
         document.getElementById('gameDate').valueAsDate = new Date();
         renderPlayerTags(); fetchFromCloud();
         const draft = JSON.parse(localStorage.getItem('poker_draft_v4') || "[]");
-        for(let i=0; i<Math.max(8, draft.length); i++) {
-            const row = addRow();
-            if(draft[i]) {
-                row.querySelector('.player-select').value = draft[i].name;
-                row.querySelector('.buyin').value = draft[i].buyin;
-                row.querySelector('.endChips').value = draft[i].end;
+        if (draft.length > 0) {
+            draft.forEach(d => {
+                const row = addRow();
+                row.querySelector('.player-select').value = d.name;
+                row.querySelector('.buyin').value = d.buyin;
+                row.querySelector('.endChips').value = d.end;
                 calculate(row.querySelector('.buyin'));
-            }
-        }
+            });
+        } else { for(let i=0; i<6; i++) addRow(); }
         updateAllDropdowns();
     };
 </script>
