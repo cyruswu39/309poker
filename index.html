@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>遊戲數據管理系統 v4.4 (專業修正版)</title>
+    <title>309 Poker Club - 數據中心</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -17,6 +17,12 @@
         body { font-family: 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif; padding: 20px; background-color: var(--bg); color: #333; line-height: 1.6; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
+        /* 隱藏/顯示區域控制 */
+        #topArea { display: none; margin-bottom: 40px; padding-bottom: 40px; border-bottom: 2px dashed #edf2f7; }
+        .admin-toggle-bar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .btn-admin { background: #edf2f7; color: #718096; padding: 5px 15px; font-size: 12px; border-radius: 5px; cursor: pointer; border: none; }
+        .btn-admin.active { background: #e53e3e; color: white; }
+
         /* 名單管理 */
         .player-manager { background: #f8f9fa; padding: 18px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #edf2f7; }
         .tag { background: white; color: var(--dark); padding: 5px 12px; border-radius: 20px; border: 1px solid #cbd5e0; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; }
@@ -88,12 +94,16 @@
 <body>
 
 <div class="container">
+    <div class="admin-toggle-bar hide-in-screenshot">
+        <button id="adminModeBtn" class="btn-admin" onclick="toggleAdminMode()">⚙️ 管理員登入</button>
+    </div>
+
     <div id="topArea">
         <div class="player-manager hide-in-screenshot">
-            <h3 style="margin-top:0; margin-bottom:12px; font-size:15px; color: #718096;">👤 名單管理</h3>
+            <h3 style="margin-top:0; margin-bottom:12px; font-size:15px; color: #718096;">👤 名單管理 (僅管理員)</h3>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="newName" placeholder="名稱" style="flex: 1; padding:10px; border-radius:8px; border:1px solid #ddd; font-size:16px;">
-                <button class="btn btn-add" onclick="addPlayerToList()">＋ 新增</button>
+                <input type="text" id="newName" placeholder="新增玩家名稱" style="flex: 1; padding:10px; border-radius:8px; border:1px solid #ddd; font-size:16px;">
+                <button class="btn btn-add" onclick="addPlayerToList()">＋ 錄入系統</button>
             </div>
             <div id="playerTags" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;"></div>
         </div>
@@ -146,10 +156,10 @@
         </div>
     </div>
 
-    <div id="bottomArea" class="hide-in-screenshot">
+    <div id="bottomArea">
         <div class="section-header"><h3>🏆 長期總結算 (雲端)</h3></div>
         
-        <div class="filter-group">
+        <div class="filter-group hide-in-screenshot">
             <span style="font-weight: bold; color: #4a5568;">自定義時段：</span>
             <input type="date" id="startDate" class="date-input" onchange="renderHistory()">
             <span style="color: #cbd5e0;">至</span>
@@ -181,13 +191,41 @@
 
 <script>
     const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzNuSQJ2ZmyTmnt-1G2bfYwtcVdXcD5iVvULkSYnsij3wJfs6UOQKCgWJvan6bqwByl/exec";
+    // --- 密碼設定（請自行修改下方 309309 為你想要的密碼） ---
+    const ADMIN_PW = "309309"; 
+
     let masterPlayerList = JSON.parse(localStorage.getItem('poker_players')) || [];
     let historyData = []; 
     let isScreenshotMode = false;
+    let isAdminMode = false;
     let trendChart = null;
     let playerColors = {};
 
     document.getElementById('gameDate').valueAsDate = new Date();
+
+    // 管理員模式切換 (加強密碼鎖)
+    function toggleAdminMode() {
+        const topArea = document.getElementById('topArea');
+        const adminBtn = document.getElementById('adminModeBtn');
+
+        if (!isAdminMode) {
+            let input = prompt("請輸入管理員密碼以開啟輸入功能：");
+            if (input === ADMIN_PW) {
+                isAdminMode = true;
+                topArea.style.display = 'block';
+                adminBtn.innerText = "🔒 退出管理模式";
+                adminBtn.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (input !== null) {
+                alert("密碼錯誤，拒絕訪問。");
+            }
+        } else {
+            isAdminMode = false;
+            topArea.style.display = 'none';
+            adminBtn.innerText = "⚙️ 管理員登入";
+            adminBtn.classList.remove('active');
+        }
+    }
 
     function getColor(name) {
         if (playerColors[name]) return playerColors[name];
@@ -233,11 +271,12 @@
     }
 
     function confirmSave() {
+        if (!isAdminMode) { alert("非法操作：請先登入管理員。"); return; }
         const diff = parseFloat(document.getElementById('chipDiff').innerText);
         if (diff !== 0) {
             if (!confirm(`⚠️ 目前籌碼差距為 ${diff}，尚未平盤！\n確定要強制儲存嗎？`)) return;
         } else {
-            if (!confirm("確定要同步今日數據到雲端嗎？")) return;
+            if (!confirm("確定要同步今日數據到雲端嗎？"));
         }
         saveData();
     }
@@ -258,8 +297,9 @@
 
     function toggleScreenshotMode() {
         isScreenshotMode = !isScreenshotMode;
-        const elementsToHide = document.querySelectorAll('.hide-in-screenshot, .player-manager, #bottomArea');
+        const elementsToHide = document.querySelectorAll('.hide-in-screenshot, .player-manager, .admin-toggle-bar');
         elementsToHide.forEach(el => el.style.display = isScreenshotMode ? 'none' : 'block');
+        document.getElementById('bottomArea').style.display = 'block'; 
         document.getElementById('screenshotSwitch').style.display = isScreenshotMode ? 'flex' : 'none';
         const btn = document.getElementById('screenshotBtn');
         btn.innerText = isScreenshotMode ? "🔙 退出" : "📸 截圖模式";
@@ -290,17 +330,14 @@
         }
     }
 
-    // --- 修正後的榮譽榜邏輯 ---
     function generateHonorReport() {
         const rows = document.querySelectorAll('#tableBody tr');
         const data = [];
         let maxScore = -Infinity;
         rows.forEach(row => {
             const name = row.querySelector('.player-select').value;
-            // 修正：將括號顯示格式 "(100)" 轉回數值 "-100"
             let scoreText = row.querySelector('.final').innerText;
             let score = parseFloat(scoreText.replace('(', '-').replace(')', '')) || 0;
-            
             if (name) {
                 data.push({ name, score });
                 if (score > maxScore) maxScore = score;
@@ -313,7 +350,6 @@
             const isWinner = p.score === maxScore && p.score > 0;
             const row = hBody.insertRow();
             if (isWinner) row.className = 'top-player';
-            // 修正：輸出時根據正負值套用正確格式
             const formattedScore = p.score >= 0 ? `+${p.score}` : `(${Math.abs(p.score)})`;
             row.innerHTML = `
                 <td class="honor-rank">${index + 1}</td>
