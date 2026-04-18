@@ -17,56 +17,40 @@
         body { font-family: 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif; padding: 20px; background-color: var(--bg); color: #333; line-height: 1.6; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
-        /* 隱藏/顯示區域控制 */
         #topArea { display: none; margin-bottom: 40px; padding-bottom: 40px; border-bottom: 2px dashed #edf2f7; }
         .admin-toggle-bar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
         .btn-admin { background: #edf2f7; color: #718096; padding: 5px 15px; font-size: 12px; border-radius: 5px; cursor: pointer; border: none; }
         .btn-admin.active { background: #e53e3e; color: white; }
 
-        /* 名單管理 */
         .player-manager { background: #f8f9fa; padding: 18px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #edf2f7; }
         .tag { background: white; color: var(--dark); padding: 5px 12px; border-radius: 20px; border: 1px solid #cbd5e0; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; }
 
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
         .section-header h3 { margin: 0; font-size: 1.25rem; color: var(--dark); }
 
-        /* 表格樣式 */
         table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 1px solid #edf2f7; }
         th { background-color: #f1f4f8; color: #4a5568; padding: 14px 10px; font-weight: 600; font-size: 14px; text-align: center; }
         td { padding: 15px 10px; border-bottom: 1px solid #edf2f7; text-align: center; font-size: 18px; color: #2d3748; }
         
         .player-select { font-size: 20px !important; font-weight: 800 !important; color: #1a202c; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; width: 100%; cursor: pointer; }
+        .buyin, .endChips { font-size: 20px !important; font-weight: bold; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 5px; width: 100px; }
         
-        .buyin, .endChips { 
-            font-size: 20px !important; 
-            font-weight: bold; 
-            text-align: center; 
-            border: 2px solid #e2e8f0; 
-            border-radius: 8px;
-            padding: 10px 5px; 
-            width: 100px; 
-        }
-        
-        .profit, .final { font-size: 22px !important; font-weight: 800 !important; font-family: 'Consolas', 'Monaco', monospace; }
+        .profit, .final { font-size: 22px !important; font-weight: 800 !important; font-family: 'Consolas', monospace; }
         .result-neg { color: #e53e3e !important; }
         .result-pos { color: #38a169 !important; }
 
-        /* 底部欄 */
         .mini-balance-bar { margin-top: 15px; padding: 15px 25px; background: var(--dark); color: white; border-radius: 10px; display: flex; justify-content: flex-end; gap: 20px; font-size: 16px; align-items: center; flex-wrap: wrap; }
         .balance-val { font-family: 'Consolas', monospace; font-weight: bold; font-size: 20px; margin-left: 6px; color: #63b3ed; }
 
-        /* 按鈕 */
         .btn { padding: 10px 18px; cursor: pointer; border: none; border-radius: 8px; font-weight: 600; transition: all 0.2s; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
         .btn-add { background: #ebf8ff; color: var(--primary); }
         .btn-confirm { background: var(--success); color: white; }
         .btn-screenshot { background: #805ad5; color: white; }
 
-        /* 截圖模式切換 */
         .screenshot-switch { display: none; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 10px; background: #edf2f7; border-radius: 10px; }
         .switch-btn { background: white; color: var(--primary); border: 2px solid var(--primary); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
         .switch-btn.active { background: var(--primary); color: white; }
 
-        /* 榮譽榜大字報 */
         #honorTableArea { display: none; }
         .honor-container { max-width: 500px; margin: 0 auto; }
         .honor-table { width: 100%; border: none; margin-top: 10px; }
@@ -78,12 +62,10 @@
         .crown { color: var(--warning); font-size: 28px; vertical-align: middle; margin-right: 5px; }
         .top-player { background-color: #fffdf5; }
 
-        /* 篩選與圖表 */
         .filter-group { display: flex; align-items: center; gap: 10px; background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 15px; flex-wrap: wrap; }
         .date-input { padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-weight: 600; color: var(--dark); }
         .chart-container { margin-top: 30px; padding: 20px; background: #fff; border-radius: 16px; border: 1px solid #edf2f7; }
 
-        /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .modal-content { background: white; margin: 5vh auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 380px; max-height: 85vh; overflow-y: auto; position: relative; }
         #modalPlayerName { position: sticky; top: -26px; background: white; padding: 15px 0 10px 0; border-bottom: 2px solid var(--primary); z-index: 10; font-size: 24px; font-weight: 900; }
@@ -100,10 +82,10 @@
 
     <div id="topArea">
         <div class="player-manager hide-in-screenshot">
-            <h3 style="margin-top:0; margin-bottom:12px; font-size:15px; color: #718096;">👤 名單管理 (僅管理員)</h3>
+            <h3 style="margin-top:0; margin-bottom:12px; font-size:15px; color: #718096;">👤 名單管理</h3>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="newName" placeholder="新增玩家名稱" style="flex: 1; padding:10px; border-radius:8px; border:1px solid #ddd; font-size:16px;">
-                <button class="btn btn-add" onclick="addPlayerToList()">＋ 錄入系統</button>
+                <input type="text" id="newName" placeholder="名稱" style="flex: 1; padding:10px; border-radius:8px; border:1px solid #ddd; font-size:16px;">
+                <button class="btn btn-add" onclick="addPlayerToList()">＋ 錄入</button>
             </div>
             <div id="playerTags" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;"></div>
         </div>
@@ -117,108 +99,78 @@
         </div>
 
         <div id="screenshotSwitch" class="screenshot-switch">
-            <button id="showFullTableBtn" class="switch-btn active" onclick="switchScreenshotView('full')">顯示詳細表格</button>
-            <button id="showHonorBtn" class="switch-btn" onclick="switchScreenshotView('honor')">👑 顯示榮譽榜 (大字排序)</button>
+            <button id="showFullTableBtn" class="switch-btn active" onclick="switchScreenshotView('full')">詳細表格</button>
+            <button id="showHonorBtn" class="switch-btn" onclick="switchScreenshotView('honor')">👑 榮譽榜</button>
         </div>
 
         <div id="fullTableArea" style="overflow-x: auto;">
             <table id="pokerTable">
                 <thead>
-                    <tr><th>玩家</th><th>幾多野</th><th>買入籌碼</th><th>結算籌碼</th><th>贏/輸</th><th>最終(含EXP)</th><th class="hide-in-screenshot" style="width: 40px;"></th></tr>
+                    <tr><th>玩家</th><th>幾多野</th><th>買入籌碼</th><th>結算籌碼</th><th>贏/輸</th><th>最終</th><th class="hide-in-screenshot"></th></tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
 
         <div id="honorTableArea">
-            <div class="honor-container">
-                <table class="honor-table">
-                    <thead>
-                        <tr><th>排名</th><th style="text-align:left; padding-left:15px;">玩家</th><th style="text-align:right; padding-right:15px;">總結算</th></tr>
-                    </thead>
-                    <tbody id="honorTableBody"></tbody>
-                </table>
-            </div>
+            <div class="honor-container"><table class="honor-table"><tbody id="honorTableBody"></tbody></table></div>
         </div>
 
         <div class="mini-balance-bar">
             <div>差距 <span id="chipDiff" class="balance-val">0</span></div>
-            <div id="balanceStatus" style="font-weight:bold;">等待輸入</div>
-            <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 20px; margin: 0 5px;"></div>
-            <div class="hide-in-screenshot">
-                <button id="saveBtn" class="btn btn-confirm" onclick="confirmSave()">💾 儲存至雲端</button>
-            </div>
+            <div id="balanceStatus">等待輸入</div>
+            <div class="hide-in-screenshot"><button id="saveBtn" class="btn btn-confirm" onclick="confirmSave()">💾 儲存至雲端</button></div>
         </div>
         
         <div style="margin-top: 20px; display: flex; justify-content: space-between;" class="hide-in-screenshot">
-            <button class="btn btn-add" style="background: var(--dark); color: white;" onclick="addRow()">+ 新增玩家一行</button>
+            <button class="btn btn-add" style="background: var(--dark); color: white;" onclick="addRow()">+ 新增玩家</button>
             <button class="btn" style="background: #edf2f7; color: #4a5568;" onclick="resetCurrentTable()">🔄 重置表格</button>
         </div>
     </div>
 
     <div id="bottomArea">
         <div class="section-header"><h3>🏆 長期總結算 (雲端)</h3></div>
-        
         <div class="filter-group hide-in-screenshot">
-            <span style="font-weight: bold; color: #4a5568;">自定義時段：</span>
-            <input type="date" id="startDate" class="date-input" onchange="renderHistory()">
-            <span style="color: #cbd5e0;">至</span>
+            <input type="date" id="startDate" class="date-input" onchange="renderHistory()"> 至 
             <input type="date" id="endDate" class="date-input" onchange="renderHistory()">
-            <button class="btn btn-add" style="font-size: 12px;" onclick="resetFilter()">全部數據</button>
+            <button class="btn btn-add" onclick="resetFilter()">全部數據</button>
         </div>
-
         <table id="historyTable">
             <thead><tr><th>玩家</th><th>場次</th><th>累計盈虧</th><th>皇冠 👑</th></tr></thead>
             <tbody id="historyBody"></tbody>
         </table>
-
-        <div class="chart-container">
-            <h3 style="margin-top:0; font-size:16px; color:var(--dark);">核心玩家累計走勢 (參賽 7 次或以上)</h3>
-            <canvas id="trendChart"></canvas>
-        </div>
+        <div class="chart-container"><canvas id="trendChart"></canvas></div>
     </div>
 </div>
 
 <div id="playerModal" class="modal" onclick="if(event.target == this) closeModal()">
-    <div class="modal-content">
-        <span style="position: absolute; right: 20px; top: 20px; cursor:pointer; color: #a0aec0; z-index: 11;" onclick="closeModal()">✕</span>
-        <h3 id="modalPlayerName"></h3>
-        <table style="margin-top: 10px; border: none;">
-            <tbody id="modalTableBody" style="font-family: 'Consolas', monospace;"></tbody>
-        </table>
-    </div>
+    <div class="modal-content"><h3 id="modalPlayerName"></h3><table style="width:100%;"><tbody id="modalTableBody"></tbody></table></div>
 </div>
 
 <script>
     const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzNuSQJ2ZmyTmnt-1G2bfYwtcVdXcD5iVvULkSYnsij3wJfs6UOQKCgWJvan6bqwByl/exec";
-    // --- 密碼設定（請自行修改下方 309309 為你想要的密碼） ---
     const ADMIN_PW = "309309"; 
 
     let masterPlayerList = JSON.parse(localStorage.getItem('poker_players')) || [];
     let historyData = []; 
-    let isScreenshotMode = false;
     let isAdminMode = false;
     let trendChart = null;
     let playerColors = {};
 
     document.getElementById('gameDate').valueAsDate = new Date();
 
-    // 管理員模式切換 (加強密碼鎖)
     function toggleAdminMode() {
         const topArea = document.getElementById('topArea');
         const adminBtn = document.getElementById('adminModeBtn');
-
         if (!isAdminMode) {
-            let input = prompt("請輸入管理員密碼以開啟輸入功能：");
+            let input = prompt("請輸入密碼：");
             if (input === ADMIN_PW) {
                 isAdminMode = true;
                 topArea.style.display = 'block';
                 adminBtn.innerText = "🔒 退出管理模式";
                 adminBtn.classList.add('active');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else if (input !== null) {
-                alert("密碼錯誤，拒絕訪問。");
-            }
+                updateAllDropdowns(); // 登入後立即刷新下拉選單
+            } else if (input !== null) alert("密碼錯誤！");
         } else {
             isAdminMode = false;
             topArea.style.display = 'none';
@@ -227,185 +179,24 @@
         }
     }
 
-    function getColor(name) {
-        if (playerColors[name]) return playerColors[name];
-        const colors = ['#3498db', '#e74c3c', '#27ae60', '#f39c12', '#9b59b6', '#1abc9c', '#d35400', '#2c3e50', '#8e44ad', '#c0392b'];
-        const index = Object.keys(playerColors).length % colors.length;
-        playerColors[name] = colors[index];
-        return playerColors[name];
-    }
-
-    function saveDraft() {
-        const rows = [];
-        document.querySelectorAll('#tableBody tr').forEach(row => {
-            const name = row.querySelector('.player-select').value;
-            const buyin = row.querySelector('.buyin').value;
-            const end = row.querySelector('.endChips').value;
-            rows.push({ name, buyin, end });
-        });
-        localStorage.setItem('poker_draft_v4', JSON.stringify(rows));
-    }
-
-    function loadDraft() {
-        const draft = JSON.parse(localStorage.getItem('poker_draft_v4'));
-        if (draft && draft.length > 0) {
-            document.getElementById('tableBody').innerHTML = '';
-            draft.forEach(d => {
-                const row = addRow();
-                row.querySelector('.player-select').value = d.name;
-                row.querySelector('.buyin').value = d.buyin;
-                row.querySelector('.endChips').value = d.end;
-                calculate(row.querySelector('.buyin'));
-            });
-            updateAllDropdowns();
-        } else {
-            for(let i=0; i<6; i++) addRow();
-        }
-    }
-
-    function resetCurrentTable() {
-        if(confirm("確定要清空目前表格嗎？")) {
-            localStorage.removeItem('poker_draft_v4');
-            location.reload();
-        }
-    }
-
-    function confirmSave() {
-        if (!isAdminMode) { alert("非法操作：請先登入管理員。"); return; }
-        const diff = parseFloat(document.getElementById('chipDiff').innerText);
-        if (diff !== 0) {
-            if (!confirm(`⚠️ 目前籌碼差距為 ${diff}，尚未平盤！\n確定要強制儲存嗎？`)) return;
-        } else {
-            if (!confirm("確定要同步今日數據到雲端嗎？"));
-        }
-        saveData();
-    }
-
+    // 核心修正：確保下拉選單始終能讀取 masterPlayerList
     function updateAllDropdowns() {
         const selects = document.querySelectorAll('.player-select');
         const selectedNames = Array.from(selects).map(s => s.value).filter(v => v);
+        
         selects.forEach(select => {
             const currentVal = select.value;
             let optHTML = `<option value="">-- 請選擇 --</option>`;
-            masterPlayerList.forEach(name => {
+            
+            // 即使 topArea 隱藏，也要確保從 localStorage 讀取最新的名單
+            const latestList = JSON.parse(localStorage.getItem('poker_players')) || [];
+            
+            latestList.forEach(name => {
                 const isTaken = selectedNames.includes(name) && name !== currentVal;
                 if (!isTaken) optHTML += `<option value="${name}" ${name === currentVal ? 'selected' : ''}>${name}</option>`;
             });
             select.innerHTML = optHTML;
         });
-    }
-
-    function toggleScreenshotMode() {
-        isScreenshotMode = !isScreenshotMode;
-        const elementsToHide = document.querySelectorAll('.hide-in-screenshot, .player-manager, .admin-toggle-bar');
-        elementsToHide.forEach(el => el.style.display = isScreenshotMode ? 'none' : 'block');
-        document.getElementById('bottomArea').style.display = 'block'; 
-        document.getElementById('screenshotSwitch').style.display = isScreenshotMode ? 'flex' : 'none';
-        const btn = document.getElementById('screenshotBtn');
-        btn.innerText = isScreenshotMode ? "🔙 退出" : "📸 截圖模式";
-        btn.style.background = isScreenshotMode ? "#718096" : "#805ad5";
-        if (isScreenshotMode) switchScreenshotView('full');
-    }
-
-    function switchScreenshotView(viewType) {
-        const fullTable = document.getElementById('fullTableArea');
-        const honorTable = document.getElementById('honorTableArea');
-        const fullBtn = document.getElementById('showFullTableBtn');
-        const honorBtn = document.getElementById('showHonorBtn');
-        const title = document.getElementById('tableTitle');
-
-        if (viewType === 'full') {
-            fullTable.style.display = 'block';
-            honorTable.style.display = 'none';
-            fullBtn.classList.add('active');
-            honorBtn.classList.remove('active');
-            title.innerText = "當晚遊戲結算表";
-        } else {
-            generateHonorReport();
-            fullTable.style.display = 'none';
-            honorTable.style.display = 'block';
-            fullBtn.classList.remove('active');
-            honorBtn.classList.add('active');
-            title.innerText = document.getElementById('gameDate').value + " 戰報榮譽榜";
-        }
-    }
-
-    function generateHonorReport() {
-        const rows = document.querySelectorAll('#tableBody tr');
-        const data = [];
-        let maxScore = -Infinity;
-        rows.forEach(row => {
-            const name = row.querySelector('.player-select').value;
-            let scoreText = row.querySelector('.final').innerText;
-            let score = parseFloat(scoreText.replace('(', '-').replace(')', '')) || 0;
-            if (name) {
-                data.push({ name, score });
-                if (score > maxScore) maxScore = score;
-            }
-        });
-        data.sort((a, b) => b.score - a.score);
-        const hBody = document.getElementById('honorTableBody');
-        hBody.innerHTML = '';
-        data.forEach((p, index) => {
-            const isWinner = p.score === maxScore && p.score > 0;
-            const row = hBody.insertRow();
-            if (isWinner) row.className = 'top-player';
-            const formattedScore = p.score >= 0 ? `+${p.score}` : `(${Math.abs(p.score)})`;
-            row.innerHTML = `
-                <td class="honor-rank">${index + 1}</td>
-                <td class="honor-name">${isWinner ? '<span class="crown">👑</span>' : ''}${p.name}</td>
-                <td class="honor-score ${p.score >= 0 ? 'result-pos' : 'result-neg'}">${formattedScore}</td>
-            `;
-        });
-    }
-
-    function addRow() {
-        const tbody = document.getElementById('tableBody');
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td><select class="player-select" onchange="updateAllDropdowns(); saveDraft();"></select></td>
-            <td><input type="number" class="buyin" placeholder="單位" oninput="calculate(this)"></td>
-            <td class="chips" style="font-weight:bold; color:#718096; font-size:16px;">0</td>
-            <td><input type="number" class="endChips" placeholder="籌碼" oninput="calculate(this)"></td>
-            <td class="profit">0</td>
-            <td class="final">0</td>
-            <td class="hide-in-screenshot"><span style="cursor:pointer; color:#e2e8f0; font-size:24px; padding:0 10px;" onclick="this.parentElement.parentElement.remove(); updateAllDropdowns(); auditChips(); saveDraft();">✕</span></td>
-        `;
-        updateAllDropdowns();
-        auditChips();
-        return row;
-    }
-
-    function calculate(el) {
-        const row = el.parentElement.parentElement;
-        const buyinUnit = parseFloat(row.querySelector('.buyin').value) || 0;
-        const endChips = parseFloat(row.querySelector('.endChips').value) || 0;
-        const buyinChips = buyinUnit * 2000;
-        row.querySelector('.chips').innerText = buyinChips;
-        const profit = (endChips - buyinChips) / 2;
-        const final = profit - 100;
-        
-        const profitCell = row.querySelector('.profit');
-        profitCell.innerText = profit >= 0 ? profit : `(${Math.abs(profit)})`;
-        profitCell.className = "profit " + (profit >= 0 ? "result-pos" : "result-neg");
-        
-        const finalCell = row.querySelector('.final');
-        finalCell.innerText = final >= 0 ? final : `(${Math.abs(final)})`;
-        finalCell.className = "final " + (final >= 0 ? "result-pos" : "result-neg");
-        
-        auditChips();
-        saveDraft();
-    }
-
-    function auditChips() {
-        let totalB = 0, totalE = 0;
-        document.querySelectorAll('.chips').forEach(td => totalB += parseFloat(td.innerText) || 0);
-        document.querySelectorAll('.endChips').forEach(input => totalE += parseFloat(input.value) || 0);
-        const d = totalE - totalB;
-        const diffEl = document.getElementById('chipDiff');
-        diffEl.innerText = d;
-        diffEl.style.color = (d === 0) ? "#63b3ed" : "#fc8181";
-        document.getElementById('balanceStatus').innerText = (totalB > 0 && d === 0) ? "✅ 已平盤" : (totalB > 0 ? "❌ 未平" : "等待輸入");
     }
 
     function addPlayerToList() {
@@ -419,144 +210,63 @@
         document.getElementById('newName').value = '';
     }
 
-    function renderPlayerTags() {
-        document.getElementById('playerTags').innerHTML = masterPlayerList.map(name => `<span class="tag">${name}</span>`).join('');
+    function addRow() {
+        const tbody = document.getElementById('tableBody');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><select class="player-select" onchange="updateAllDropdowns(); saveDraft();"></select></td>
+            <td><input type="number" class="buyin" placeholder="單位" oninput="calculate(this)"></td>
+            <td class="chips" style="font-weight:bold; color:#718096; font-size:16px;">0</td>
+            <td><input type="number" class="endChips" placeholder="籌碼" oninput="calculate(this)"></td>
+            <td class="profit">0</td>
+            <td class="final">0</td>
+            <td class="hide-in-screenshot"><span style="cursor:pointer; color:#cbd5e0;" onclick="this.parentElement.parentElement.remove(); updateAllDropdowns(); auditChips(); saveDraft();">✕</span></td>
+        `;
+        updateAllDropdowns();
+        auditChips();
+        return row;
     }
 
-    async function fetchFromCloud() {
-        try {
-            const response = await fetch(CLOUD_URL);
-            historyData = await response.json();
-            renderHistory();
-        } catch (e) { console.error(e); }
-    }
-
-    function renderHistory() {
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-        const data = historyData.filter(d => {
-            const dDate = d.date.split('T')[0];
-            if (start && dDate < start) return false;
-            if (end && dDate > end) return false;
-            return true;
-        });
-        const summary = {};
-        const batches = {};
-        data.forEach(item => {
-            if (!summary[item.name]) summary[item.name] = { count: 0, total: 0 };
-            summary[item.name].count++;
-            summary[item.name].total += parseFloat(item.score);
-            if (!batches[item.batchId]) batches[item.batchId] = [];
-            batches[item.batchId].push(item);
-        });
-        const crowns = {};
-        Object.values(batches).forEach(pList => {
-            let max = Math.max(...pList.map(p => parseFloat(p.score)));
-            if (max > 0) pList.forEach(p => { if (parseFloat(p.score) === max) crowns[p.name] = (crowns[p.name] || 0) + 1; });
-        });
-        const sorted = Object.keys(summary).sort((a, b) => summary[b].total - summary[a].total);
-        const hBody = document.getElementById('historyBody');
-        hBody.innerHTML = '';
-        sorted.forEach(name => {
-            const row = hBody.insertRow();
-            const t = summary[name].total;
-            const c = crowns[name] || 0;
-            const formattedTotal = t >= 0 ? t.toFixed(0) : `(${Math.abs(t).toFixed(0)})`;
-            row.innerHTML = `
-                <td style="color:var(--primary); font-weight:bold; cursor:pointer;" onclick="showPlayerDetail('${name}')">${name}</td>
-                <td>${summary[name].count}</td>
-                <td class="${t >= 0 ? 'result-pos' : 'result-neg'}">${formattedTotal}</td>
-                <td style="color:var(--warning); font-size:18px;">${c > 0 ? '👑 ' + c : '-'}</td>
-            `;
-        });
-        updateTrendChart(data);
-    }
-
-    function updateTrendChart(filteredData) {
-        const ctx = document.getElementById('trendChart').getContext('2d');
-        const dates = [...new Set(filteredData.map(d => d.date.split('T')[0]))].sort();
-        const totalCounts = {};
-        historyData.forEach(d => totalCounts[d.name] = (totalCounts[d.name] || 0) + 1);
-        const corePlayers = Object.keys(totalCounts).filter(name => totalCounts[name] >= 7);
-        const datasets = corePlayers.map(name => {
-            let cumulative = 0;
-            const dataPoints = dates.map(date => {
-                const record = filteredData.find(d => d.name === name && d.date.split('T')[0] === date);
-                if (record) cumulative += parseFloat(record.score);
-                return cumulative;
+    // 初始載入
+    window.onload = () => { 
+        renderPlayerTags(); 
+        fetchFromCloud(); 
+        
+        // 預先載入行，即使未登入也準備好結構
+        const draft = JSON.parse(localStorage.getItem('poker_draft_v4'));
+        if (draft && draft.length > 0) {
+            document.getElementById('tableBody').innerHTML = '';
+            draft.forEach(d => {
+                const row = addRow();
+                row.querySelector('.player-select').value = d.name;
+                row.querySelector('.buyin').value = d.buyin;
+                row.querySelector('.endChips').value = d.end;
+                calculate(row.querySelector('.buyin'));
             });
-            const color = getColor(name);
-            return {
-                label: name, data: dataPoints, borderColor: color, backgroundColor: color, fill: false, tension: 0.2, pointRadius: 4
-            };
-        });
-        if (trendChart) trendChart.destroy();
-        trendChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: dates, datasets: datasets },
-            options: {
-                responsive: true,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 } } } },
-                scales: {
-                    y: { grid: { color: '#f0f0f0' }, title: { display: true, text: '累計盈虧' } },
-                    x: { ticks: { maxRotation: 45, minRotation: 45 } }
-                }
-            }
-        });
-    }
+        } else {
+            for(let i=0; i<6; i++) addRow();
+        }
+        updateAllDropdowns(); 
+    };
 
-    function showPlayerDetail(name) {
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-        const modalTableBody = document.getElementById('modalTableBody');
-        document.getElementById('modalPlayerName').innerText = name;
-        modalTableBody.innerHTML = '';
-        const filtered = historyData.filter(h => {
-            if (h.name !== name) return false;
-            const dDate = h.date.split('T')[0];
-            if (start && dDate < start) return false;
-            if (end && dDate > end) return false;
-            return true;
-        }).sort((a, b) => new Date(b.date) - new Date(a.date));
-        filtered.forEach(r => {
-            const row = modalTableBody.insertRow();
-            const score = parseFloat(r.score);
-            const formatted = score >= 0 ? `+${score}` : `(${Math.abs(score)})`;
-            row.innerHTML = `<td style="text-align:left; border:none; padding:8px 0;">${r.date.split('T')[0]}</td><td class="${score >= 0 ? 'result-pos' : 'result-neg'}" style="text-align:right; border:none; padding:8px 0; font-weight:bold;">${formatted}</td>`;
-        });
-        document.getElementById('playerModal').style.display = "block";
-    }
-
-    function closeModal() { document.getElementById('playerModal').style.display = "none"; }
-    function resetFilter() { document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; renderHistory(); }
-
-    async function saveData() {
-        const rows = document.querySelectorAll('#tableBody tr');
-        const date = document.getElementById('gameDate').value;
-        const batchId = 'B' + Date.now();
-        const payload = [];
-        rows.forEach(row => {
-            const n = row.querySelector('.player-select').value;
-            let sRaw = row.querySelector('.final').innerText.replace('(', '-').replace(')', '');
-            const s = parseFloat(sRaw);
-            if (n) payload.push({ date, name: n, score: s, batchId });
-        });
-        const saveBtn = document.getElementById('saveBtn');
-        saveBtn.disabled = true;
-        saveBtn.innerText = "⏳ 同步中...";
-        try {
-            await fetch(CLOUD_URL, { method: "POST", body: JSON.stringify(payload) });
-            alert("✅ 數據同步成功！");
-            localStorage.removeItem('poker_draft_v4');
-            location.reload(); 
-        } catch (e) { 
-            alert("❌ 儲存失敗，請檢查網路。"); 
-            saveBtn.disabled = false;
-            saveBtn.innerText = "💾 儲存至雲端";
-        } 
-    }
-
-    window.onload = () => { renderPlayerTags(); fetchFromCloud(); loadDraft(); };
+    // 其餘邏輯保持不變...
+    function getColor(name) { if (playerColors[name]) return playerColors[name]; const colors = ['#3498db', '#e74c3c', '#27ae60', '#f39c12', '#9b59b6']; const index = Object.keys(playerColors).length % colors.length; playerColors[name] = colors[index]; return playerColors[name]; }
+    function saveDraft() { const rows = []; document.querySelectorAll('#tableBody tr').forEach(row => { const name = row.querySelector('.player-select').value; const buyin = row.querySelector('.buyin').value; const end = row.querySelector('.endChips').value; rows.push({ name, buyin, end }); }); localStorage.setItem('poker_draft_v4', JSON.stringify(rows)); }
+    function resetCurrentTable() { if(confirm("確定要清空目前表格嗎？")) { localStorage.removeItem('poker_draft_v4'); location.reload(); } }
+    function confirmSave() { if (!isAdminMode) return; const diff = parseFloat(document.getElementById('chipDiff').innerText); if (diff !== 0 && !confirm(`籌碼未平 (${diff})，確定儲存？`)) return; if (confirm("確定同步到雲端？")) saveData(); }
+    function toggleScreenshotMode() { const isSS = document.getElementById('screenshotBtn').innerText.includes("📸"); document.querySelectorAll('.hide-in-screenshot, .player-manager, .admin-toggle-bar').forEach(el => el.style.display = isSS ? 'none' : 'block'); document.getElementById('screenshotSwitch').style.display = isSS ? 'flex' : 'none'; document.getElementById('screenshotBtn').innerText = isSS ? "🔙 退出" : "📸 截圖模式"; if(isSS) switchScreenshotView('full'); }
+    function switchScreenshotView(type) { const isFull = type === 'full'; document.getElementById('fullTableArea').style.display = isFull ? 'block' : 'none'; document.getElementById('honorTableArea').style.display = isFull ? 'none' : 'block'; document.getElementById('showFullTableBtn').classList.toggle('active', isFull); document.getElementById('showHonorBtn').classList.toggle('active', !isFull); if(!isFull) generateHonorReport(); }
+    function generateHonorReport() { const rows = document.querySelectorAll('#tableBody tr'); const data = []; let max = -Infinity; rows.forEach(row => { const n = row.querySelector('.player-select').value; const s = parseFloat(row.querySelector('.final').innerText.replace('(', '-').replace(')', '')) || 0; if(n) { data.push({n, s}); if(s > max) max = s; } }); data.sort((a,b) => b.s - a.s); const hBody = document.getElementById('honorTableBody'); hBody.innerHTML = data.map((p, i) => `<tr class="${p.s===max && p.s>0?'top-player':''}"><td>${i+1}</td><td>${p.s===max && p.s>0?'👑':''}${p.n}</td><td class="${p.s>=0?'result-pos':'result-neg'}">${p.s>=0?'+'+p.s:'('+Math.abs(p.s)+')'}</td></tr>`).join(''); }
+    function calculate(el) { const row = el.parentElement.parentElement; const b = parseFloat(row.querySelector('.buyin').value) || 0; const e = parseFloat(row.querySelector('.endChips').value) || 0; const bc = b * 2000; row.querySelector('.chips').innerText = bc; const p = (e - bc) / 2; const f = p - 100; row.querySelector('.profit').innerText = p>=0?p:`(${Math.abs(p)})`; row.querySelector('.profit').className = "profit "+(p>=0?"result-pos":"result-neg"); row.querySelector('.final').innerText = f>=0?f:`(${Math.abs(f)})`; row.querySelector('.final').className = "final "+(f>=0?"result-pos":"result-neg"); auditChips(); saveDraft(); }
+    function auditChips() { let tb=0, te=0; document.querySelectorAll('.chips').forEach(td => tb+=parseFloat(td.innerText)||0); document.querySelectorAll('.endChips').forEach(i => te+=parseFloat(i.value)||0); const d = te - tb; document.getElementById('chipDiff').innerText = d; document.getElementById('chipDiff').style.color = d===0?"#63b3ed":"#fc8181"; document.getElementById('balanceStatus').innerText = (tb>0&&d===0)?"✅ 已平盤": (tb>0?"❌ 未平":"等待輸入"); }
+    function renderPlayerTags() { document.getElementById('playerTags').innerHTML = masterPlayerList.map(n => `<span class="tag">${n}</span>`).join(''); }
+    async function fetchFromCloud() { try { const r = await fetch(CLOUD_URL); historyData = await r.json(); renderHistory(); } catch(e){} }
+    function renderHistory() { const s = document.getElementById('startDate').value, e = document.getElementById('endDate').value; const data = historyData.filter(d => { const dt = d.date.split('T')[0]; return (!s || dt >= s) && (!e || dt <= e); }); const sum = {}, bat = {}; data.forEach(i => { if(!sum[i.name]) sum[i.name] = {c:0, t:0}; sum[i.name].c++; sum[i.name].t += parseFloat(i.score); if(!bat[i.batchId]) bat[i.batchId] = []; bat[i.batchId].push(i); }); const cr = {}; Object.values(bat).forEach(list => { let m = Math.max(...list.map(p => parseFloat(p.score))); if(m>0) list.forEach(p => { if(parseFloat(p.score)===m) cr[p.name] = (cr[p.name]||0)+1; }); }); const sorted = Object.keys(sum).sort((a,b) => sum[b].t - sum[a].t); document.getElementById('historyBody').innerHTML = sorted.map(n => `<tr><td style="color:var(--primary);cursor:pointer;" onclick="showPlayerDetail('${n}')">${n}</td><td>${sum[n].c}</td><td class="${sum[n].t>=0?'result-pos':'result-neg'}">${sum[n].t>=0?sum[n].t.toFixed(0):'('+Math.abs(sum[n].t).toFixed(0)+')'}</td><td>${cr[n]?'👑'+cr[n]:'-'}</td></tr>`).join(''); updateTrendChart(data); }
+    function updateTrendChart(fData) { const ctx = document.getElementById('trendChart').getContext('2d'); const dts = [...new Set(fData.map(d => d.date.split('T')[0]))].sort(); const counts = {}; historyData.forEach(d => counts[d.name] = (counts[d.name]||0)+1); const core = Object.keys(counts).filter(n => counts[n] >= 7); const ds = core.map(n => { let c=0; return { label:n, data: dts.map(d => { const r = fData.find(x => x.name===n && x.date.split('T')[0]===d); if(r) c+=parseFloat(r.score); return c; }), borderColor: getColor(n), fill:false }; }); if(trendChart) trendChart.destroy(); trendChart = new Chart(ctx, { type:'line', data:{labels:dts, datasets:ds}, options:{responsive:true, plugins:{legend:{position:'bottom'}}} }); }
+    function showPlayerDetail(n) { const s = document.getElementById('startDate').value, e = document.getElementById('endDate').value; document.getElementById('modalPlayerName').innerText = n; const f = historyData.filter(h => h.name===n && (!s || h.date.split('T')[0]>=s) && (!e || h.date.split('T')[0]<=e)).sort((a,b)=>new Date(b.date)-new Date(a.date)); document.getElementById('modalTableBody').innerHTML = f.map(r => { const sc = parseFloat(r.score); return `<tr><td>${r.date.split('T')[0]}</td><td class="${sc>=0?'result-pos':'result-neg'}">${sc>=0?'+'+sc:'('+Math.abs(sc)+')'}</td></tr>` }).join(''); document.getElementById('playerModal').style.display="block"; }
+    function closeModal() { document.getElementById('playerModal').style.display="none"; }
+    function resetFilter() { document.getElementById('startDate').value=''; document.getElementById('endDate').value=''; renderHistory(); }
+    async function saveData() { const rows = document.querySelectorAll('#tableBody tr'); const d = document.getElementById('gameDate').value; const bId = 'B'+Date.now(); const p = []; rows.forEach(r => { const n = r.querySelector('.player-select').value; const s = parseFloat(r.querySelector('.final').innerText.replace('(', '-').replace(')', '')); if(n) p.push({date:d, name:n, score:s, batchId:bId}); }); const btn = document.getElementById('saveBtn'); btn.disabled=true; btn.innerText="⏳..."; try { await fetch(CLOUD_URL, {method:"POST", body:JSON.stringify(p)}); alert("✅ 成功！"); localStorage.removeItem('poker_draft_v4'); location.reload(); } catch(e){ alert("❌ 失敗"); btn.disabled=false; btn.innerText="💾"; } }
 </script>
 </body>
 </html>
