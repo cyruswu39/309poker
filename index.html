@@ -3,109 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>309 Poker Club - 數據中心 v4.7</title>
+    <title>309 Poker Club - 數據中心 v4.8</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #3498db; --success: #27ae60; --warning: #f39c12; --danger: #e74c3c; --dark: #2c3e50; --bg: #f0f2f5; }
-        body { font-family: 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif; padding: 15px; background-color: var(--bg); color: #333; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .admin-toggle-bar { display: flex; justify-content: flex-end; margin-bottom: 15px; }
+        body { font-family: 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif; padding: 20px; background-color: var(--bg); color: #333; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .admin-toggle-bar { display: flex; justify-content: flex-end; margin-bottom: 25px; }
         .btn-admin { background: #edf2f7; color: #718096; padding: 10px 20px; font-size: 14px; border-radius: 8px; cursor: pointer; border: 1px solid #cbd5e0; font-weight: bold; }
-        #topArea { display: none; margin-bottom: 30px; padding: 20px; background: #fff; border: 2px solid #edf2f7; border-radius: 12px; position: relative; }
-        .player-manager { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px; border-left: 5px solid var(--primary); padding-left: 12px; }
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: #f1f4f8; color: #4a5568; padding: 12px 8px; font-size: 13px; }
-        td { padding: 12px 5px; border-bottom: 1px solid #edf2f7; text-align: center; }
-        .player-select { font-size: 18px !important; font-weight: bold; padding: 8px; border: 2px solid #cbd5e0; border-radius: 8px; width: 150px; background: white; }
-        .buyin, .endChips { font-size: 18px !important; font-weight: bold; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px; width: 85px; }
-        .profit, .final { font-size: 20px !important; font-weight: 800; font-family: 'Consolas', monospace; }
+        #topArea { display: none; margin-bottom: 40px; padding: 25px; background: #fff; border: 2px solid #edf2f7; border-radius: 15px; }
+        .player-manager { background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e9ecef; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin: 25px 0 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th { background: #f1f4f8; color: #4a5568; padding: 15px 10px; font-size: 14px; text-align: center; }
+        td { padding: 12px 10px; border-bottom: 1px solid #edf2f7; text-align: center; }
+        .player-select { font-size: 20px !important; font-weight: bold; padding: 10px; border: 2px solid #cbd5e0; border-radius: 10px; width: 160px; background: white; }
+        .buyin, .endChips { font-size: 20px !important; font-weight: bold; text-align: center; border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px; width: 90px; }
+        .profit, .final { font-size: 22px !important; font-weight: 800; font-family: 'Consolas', monospace; }
         .result-neg { color: #e53e3e !important; }
         .result-pos { color: #38a169 !important; }
-        .mini-balance-bar { margin-top: 15px; padding: 15px; background: var(--dark); color: white; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .btn { padding: 10px 16px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .mini-balance-bar { margin-top: 20px; padding: 20px; background: var(--dark); color: white; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { padding: 12px 24px; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; transition: 0.2s; }
         .btn-confirm { background: var(--success); color: white; }
         .btn-screenshot { background: var(--warning); color: white; margin-left: 10px; }
         .btn-add { background: #ebf8ff; color: var(--primary); border: 1px solid var(--primary); }
-        .tag { background: #eee; padding: 4px 10px; border-radius: 15px; font-size: 12px; margin-right: 5px; display: inline-block; }
-        
-        /* 截圖模式專用樣式 */
-        .screenshot-mode .hide-in-screenshot { display: none !important; }
-        .screenshot-mode .player-select { border: none; appearance: none; -webkit-appearance: none; background: transparent; pointer-events: none; font-size: 24px !important; width: auto; }
-        .screenshot-mode .final { font-size: 28px !important; }
-        .screenshot-mode .container { box-shadow: none; border: 2px solid #eee; }
-        .screenshot-mode #topArea { display: block !important; border: none; }
-        .screenshot-mode #bottomArea { display: none; }
+        .tag { background: #e2e8f0; padding: 6px 12px; border-radius: 20px; font-size: 13px; margin-right: 8px; display: inline-block; }
+
+        /* 截圖模式：放大並隱藏雜項 */
+        .screenshot-mode .hide-in-ss { display: none !important; }
+        .screenshot-mode .container { box-shadow: none; border: none; padding: 10px; }
+        .screenshot-mode .player-select { border: none; appearance: none; font-size: 28px !important; width: auto; background: transparent; }
+        .screenshot-mode .final { font-size: 32px !important; }
+        .screenshot-mode th { font-size: 18px; }
         
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { background: white; margin: 10vh auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; }
+        .modal-content { background: white; margin: 5vh auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 450px; }
     </style>
 </head>
 <body>
 
 <div class="container" id="mainContainer">
-    <div class="admin-toggle-bar hide-in-screenshot">
+    <div class="admin-toggle-bar hide-in-ss">
         <button id="adminModeBtn" class="btn-admin" onclick="toggleAdminMode()">⚙️ 管理員登入</button>
     </div>
 
     <div id="topArea">
-        <div class="player-manager hide-in-screenshot">
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="newName" placeholder="新玩家名" style="flex:1; padding:10px; border-radius:8px; border:1px solid #ddd;">
+        <div class="player-manager hide-in-ss">
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="newName" placeholder="輸入新玩家名字..." style="flex:1; padding:12px; border-radius:10px; border:1px solid #ddd; font-size:16px;">
                 <button class="btn btn-add" onclick="addPlayerToList()">＋ 錄入名單</button>
             </div>
-            <div id="playerTags" style="margin-top:10px;"></div>
+            <div id="playerTags" style="margin-top:15px;"></div>
         </div>
 
         <div class="section-header">
-            <h2 id="topTitle" style="margin:0;">Poker 當晚結算</h2>
-            <input type="date" id="gameDate" style="border:none; font-size:16px; font-weight:bold;">
+            <h2 id="topTitle" style="margin:0;">當晚比賽結算</h2>
+            <input type="date" id="gameDate" style="border:none; font-size:18px; font-weight:bold;">
         </div>
 
         <div class="table-wrapper">
             <table id="inputTable">
                 <thead>
-                    <tr class="hide-in-screenshot"><th>玩家</th><th>單位</th><th>買入</th><th>結算</th><th>盈虧</th><th>最終</th><th></th></tr>
-                    <tr class="only-show-screenshot" style="display:none;"><th>排名</th><th>玩家</th><th>最終得分</th></tr>
+                    <tr id="tableHeader">
+                        <th>玩家</th>
+                        <th class="hide-in-ss">單位</th>
+                        <th class="hide-in-ss">買入</th>
+                        <th class="hide-in-ss">結算</th>
+                        <th class="hide-in-ss">盈虧</th>
+                        <th id="scoreHeader">最終</th>
+                        <th class="hide-in-ss"></th>
+                    </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
 
-        <div class="mini-balance-bar hide-in-screenshot">
-            <div>差距: <span id="chipDiff" style="color:#63b3ed; font-weight:bold;">0</span></div>
+        <div class="mini-balance-bar hide-in-ss">
+            <div>差距: <span id="chipDiff" style="color:#63b3ed; font-weight:bold; font-size:20px;">0</span></div>
             <div>
                 <button id="saveBtn" class="btn btn-confirm" onclick="confirmSave()">💾 儲存到雲端</button>
                 <button class="btn btn-screenshot" onclick="enterScreenshotMode()">📸 截圖模式</button>
             </div>
         </div>
         
-        <div class="hide-in-screenshot" style="margin-top:15px; display:flex; justify-content:space-between;">
+        <div class="hide-in-ss" style="margin-top:20px; display:flex; justify-content:space-between;">
             <button class="btn btn-add" style="background:#2c3e50; color:white;" onclick="addRow()">+ 新增玩家</button>
             <button class="btn" onclick="resetCurrentTable()">🔄 重置表格</button>
         </div>
 
-        <button id="exitSSBtn" class="btn" style="display:none; position:fixed; bottom:20px; right:20px; background:var(--danger); color:white; z-index:9999;" onclick="exitScreenshotMode()">❌ 退出截圖</button>
+        <button id="exitSSBtn" class="btn" style="display:none; position:fixed; bottom:30px; right:30px; background:var(--danger); color:white; z-index:9999; box-shadow: 0 4px 12px rgba(0,0,0,0.2);" onclick="exitScreenshotMode()">❌ 退出截圖模式</button>
     </div>
 
-    <div id="bottomArea">
-        <div class="section-header"><h3>🏆 長期總結算</h3></div>
+    <div id="bottomArea" class="hide-in-ss">
+        <div class="section-header"><h3>🏆 長期總結算 (雲端數據)</h3></div>
         <div class="table-wrapper">
             <table>
                 <thead><tr><th>玩家</th><th>場次</th><th>累計盈虧</th><th>皇冠 👑</th></tr></thead>
                 <tbody id="historyBody"></tbody>
             </table>
         </div>
-        <div style="margin-top:30px;"><canvas id="trendChart"></canvas></div>
+        <div style="margin-top:40px;"><canvas id="trendChart"></canvas></div>
     </div>
 </div>
 
 <div id="playerModal" class="modal" onclick="if(event.target == this) closeModal()">
     <div class="modal-content">
-        <h3 id="modalPlayerName"></h3>
-        <div style="max-height: 400px; overflow-y: auto;"><table style="width: 100%;"><tbody id="modalTableBody"></tbody></table></div>
-        <button class="btn" style="width:100%; margin-top:15px;" onclick="closeModal()">關閉</button>
+        <h3 id="modalPlayerName" style="border-bottom:3px solid var(--primary); padding-bottom:10px;"></h3>
+        <div style="max-height: 450px; overflow-y: auto;"><table style="width: 100%;"><tbody id="modalTableBody"></tbody></table></div>
+        <button class="btn" style="width:100%; margin-top:20px; background:#edf2f7; color:#4a5568;" onclick="closeModal()">關閉窗口</button>
     </div>
 </div>
 
@@ -119,6 +124,7 @@
         return JSON.parse(localStorage.getItem('poker_players') || "[]");
     }
 
+    // --- 修正：更聰明的下拉選單過濾 ---
     function updateAllDropdowns() {
         const selects = document.querySelectorAll('.player-select');
         const masterList = getStoredPlayers();
@@ -128,8 +134,9 @@
             const currentSelected = select.value;
             let html = `<option value="">-- 請選擇 --</option>`;
             masterList.forEach(name => {
-                const isSelectedByOthers = selectedValues.some((val, i) => val === name && i !== index);
-                if (!isSelectedByOthers) {
+                // 如果該名字被其他行選了，就在這行隱藏；但如果是這行自己選的，就要留著
+                const isSelectedElsewhere = selectedValues.some((val, i) => val === name && i !== index);
+                if (!isSelectedElsewhere) {
                     html += `<option value="${name}" ${name === currentSelected ? 'selected' : ''}>${name}</option>`;
                 }
             });
@@ -138,9 +145,9 @@
     }
 
     function toggleAdminMode() {
-        if (prompt("密碼：") === ADMIN_PW) {
+        if (prompt("請輸入管理員密碼：") === ADMIN_PW) {
             document.getElementById('topArea').style.display = 'block';
-            document.getElementById('adminModeBtn').innerText = "🔒 管理模式";
+            document.getElementById('adminModeBtn').innerText = "🔒 管理模式已開啟";
             updateAllDropdowns();
         }
     }
@@ -149,12 +156,12 @@
         const row = document.getElementById('tableBody').insertRow();
         row.innerHTML = `
             <td><select class="player-select" onchange="updateAllDropdowns(); saveDraft();"></select></td>
-            <td class="hide-in-screenshot"><input type="number" class="buyin" placeholder="0" oninput="calculate(this)"></td>
-            <td class="chips hide-in-screenshot" style="color:#718096; font-size:14px;">0</td>
-            <td class="hide-in-screenshot"><input type="number" class="endChips" placeholder="0" oninput="calculate(this)"></td>
-            <td class="profit hide-in-screenshot">0</td>
-            <td class="final">0</td>
-            <td class="hide-in-screenshot"><span style="cursor:pointer;color:#ccc;font-size:20px;" onclick="this.closest('tr').remove(); updateAllDropdowns(); auditChips();">✕</span></td>
+            <td class="hide-in-ss"><input type="number" class="buyin" placeholder="0" oninput="calculate(this)"></td>
+            <td class="chips hide-in-ss" style="color:#718096; font-size:14px;">0</td>
+            <td class="hide-in-ss"><input type="number" class="endChips" placeholder="0" oninput="calculate(this)"></td>
+            <td class="profit hide-in-ss">0</td>
+            <td class="final" data-val="0">0</td>
+            <td class="hide-in-ss"><span style="cursor:pointer;color:#ccc;font-size:24px;" onclick="this.closest('tr').remove(); updateAllDropdowns(); auditChips(); saveDraft();">✕</span></td>
         `;
         if (prefill) {
             row.querySelector('.player-select').value = prefill.name;
@@ -174,13 +181,15 @@
         const p = (e - bc) / 2;
         const f = p - 100;
         
-        row.querySelector('.profit').innerText = p >= 0 ? p : `(${Math.abs(p)})`;
-        row.querySelector('.profit').className = "profit " + (p >= 0 ? "result-pos" : "result-neg");
+        const pCell = row.querySelector('.profit');
+        pCell.innerText = p >= 0 ? p : `(${Math.abs(p)})`;
+        pCell.className = "profit " + (p >= 0 ? "result-pos" : "result-neg");
         
         const fCell = row.querySelector('.final');
         fCell.innerText = f >= 0 ? f : `(${Math.abs(f)})`;
         fCell.className = "final " + (f >= 0 ? "result-pos" : "result-neg");
-        fCell.setAttribute('data-val', f); // 用於截圖模式排序
+        fCell.setAttribute('data-val', f);
+        
         auditChips(); saveDraft();
     }
 
@@ -188,47 +197,49 @@
         let b = 0, e = 0;
         document.querySelectorAll('.chips').forEach(td => b += parseFloat(td.innerText) || 0);
         document.querySelectorAll('.endChips').forEach(i => e += parseFloat(i.value) || 0);
-        document.getElementById('chipDiff').innerText = e - b;
+        const diff = e - b;
+        const el = document.getElementById('chipDiff');
+        el.innerText = diff;
+        el.style.color = (diff === 0) ? "#63b3ed" : "#fc8181";
     }
 
     function enterScreenshotMode() {
         const tbody = document.getElementById('tableBody');
         const rows = Array.from(tbody.querySelectorAll('tr'));
         
-        // 排序邏輯
+        // 按分數排序
         rows.sort((a, b) => {
             const valA = parseFloat(a.querySelector('.final').getAttribute('data-val')) || 0;
             const valB = parseFloat(b.querySelector('.final').getAttribute('data-val')) || 0;
             return valB - valA;
         });
 
-        // 清空重放並加皇冠
         tbody.innerHTML = '';
         rows.forEach((row, index) => {
             const name = row.querySelector('.player-select').value;
-            if(!name) return; // 沒選人的不顯示
+            if(!name) return;
             
             const finalVal = row.querySelector('.final').innerText;
             const finalClass = row.querySelector('.final').className;
             
             const newRow = tbody.insertRow();
             newRow.innerHTML = `
-                <td style="font-size:24px; font-weight:bold;">${index === 0 ? '👑' : index + 1}</td>
-                <td style="font-size:24px; font-weight:bold;">${name}</td>
-                <td class="${finalClass}" style="font-size:28px !important;">${finalVal}</td>
+                <td style="font-size:26px; font-weight:bold;">${index === 0 ? '👑' : index + 1}</td>
+                <td style="font-size:26px; font-weight:bold;">${name}</td>
+                <td class="${finalClass}" style="font-size:30px !important;">${finalVal}</td>
             `;
         });
 
         document.body.classList.add('screenshot-mode');
         document.getElementById('exitSSBtn').style.display = 'block';
-        document.getElementById('topTitle').innerText = "🏆 戰報結算";
+        document.getElementById('topTitle').innerText = "🏆 今日賽果";
+        document.getElementById('scoreHeader').innerText = "得分";
     }
 
     function exitScreenshotMode() {
-        location.reload(); // 最安全的回歸方式
+        location.reload(); 
     }
 
-    // --- 其餘雲端數據邏輯保持不變 ---
     function addPlayerToList() {
         const name = document.getElementById('newName').value.trim();
         if (name) {
@@ -325,7 +336,8 @@
         document.querySelectorAll('#tableBody tr').forEach(r => {
             const sel = r.querySelector('.player-select');
             if(sel && sel.value) {
-                const s = parseFloat(r.querySelector('.final').getAttribute('data-val')) || 0;
+                const sText = r.querySelector('.final').innerText;
+                const s = parseFloat(sText.replace('(','-').replace(')',''));
                 payload.push({ date, name: sel.value, score: s, batchId: bid });
             }
         });
