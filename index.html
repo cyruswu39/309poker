@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>309 Poker Club - 數據中心 v4.6</title>
+    <title>309 Poker Club - 數據中心 v4.7</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #3498db; --success: #27ae60; --warning: #f39c12; --danger: #e74c3c; --dark: #2c3e50; --bg: #f0f2f5; }
@@ -11,61 +11,86 @@
         .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .admin-toggle-bar { display: flex; justify-content: flex-end; margin-bottom: 15px; }
         .btn-admin { background: #edf2f7; color: #718096; padding: 10px 20px; font-size: 14px; border-radius: 8px; cursor: pointer; border: 1px solid #cbd5e0; font-weight: bold; }
-        #topArea { display: none; margin-bottom: 30px; padding: 20px; background: #fff; border: 2px solid #edf2f7; border-radius: 12px; }
+        #topArea { display: none; margin-bottom: 30px; padding: 20px; background: #fff; border: 2px solid #edf2f7; border-radius: 12px; position: relative; }
         .player-manager { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px; border-left: 5px solid var(--primary); padding-left: 12px; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: #f1f4f8; color: #4a5568; padding: 12px 8px; font-size: 13px; text-align: center; }
-        td { padding: 10px 5px; border-bottom: 1px solid #edf2f7; text-align: center; }
+        th { background: #f1f4f8; color: #4a5568; padding: 12px 8px; font-size: 13px; }
+        td { padding: 12px 5px; border-bottom: 1px solid #edf2f7; text-align: center; }
         .player-select { font-size: 18px !important; font-weight: bold; padding: 8px; border: 2px solid #cbd5e0; border-radius: 8px; width: 150px; background: white; }
         .buyin, .endChips { font-size: 18px !important; font-weight: bold; text-align: center; border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px; width: 85px; }
-        .profit, .final { font-size: 19px !important; font-weight: 800; font-family: 'Consolas', monospace; }
+        .profit, .final { font-size: 20px !important; font-weight: 800; font-family: 'Consolas', monospace; }
         .result-neg { color: #e53e3e !important; }
         .result-pos { color: #38a169 !important; }
         .mini-balance-bar { margin-top: 15px; padding: 15px; background: var(--dark); color: white; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .btn { padding: 10px 16px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; }
+        .btn { padding: 10px 16px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: 0.2s; }
         .btn-confirm { background: var(--success); color: white; }
+        .btn-screenshot { background: var(--warning); color: white; margin-left: 10px; }
         .btn-add { background: #ebf8ff; color: var(--primary); border: 1px solid var(--primary); }
         .tag { background: #eee; padding: 4px 10px; border-radius: 15px; font-size: 12px; margin-right: 5px; display: inline-block; }
+        
+        /* 截圖模式專用樣式 */
+        .screenshot-mode .hide-in-screenshot { display: none !important; }
+        .screenshot-mode .player-select { border: none; appearance: none; -webkit-appearance: none; background: transparent; pointer-events: none; font-size: 24px !important; width: auto; }
+        .screenshot-mode .final { font-size: 28px !important; }
+        .screenshot-mode .container { box-shadow: none; border: 2px solid #eee; }
+        .screenshot-mode #topArea { display: block !important; border: none; }
+        .screenshot-mode #bottomArea { display: none; }
+        
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
         .modal-content { background: white; margin: 10vh auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="admin-toggle-bar">
+<div class="container" id="mainContainer">
+    <div class="admin-toggle-bar hide-in-screenshot">
         <button id="adminModeBtn" class="btn-admin" onclick="toggleAdminMode()">⚙️ 管理員登入</button>
     </div>
 
     <div id="topArea">
-        <div class="player-manager">
+        <div class="player-manager hide-in-screenshot">
             <div style="display: flex; gap: 8px;">
                 <input type="text" id="newName" placeholder="新玩家名" style="flex:1; padding:10px; border-radius:8px; border:1px solid #ddd;">
                 <button class="btn btn-add" onclick="addPlayerToList()">＋ 錄入名單</button>
             </div>
             <div id="playerTags" style="margin-top:10px;"></div>
         </div>
-        <div class="section-header"><h3>當晚結算</h3><input type="date" id="gameDate"></div>
+
+        <div class="section-header">
+            <h2 id="topTitle" style="margin:0;">Poker 當晚結算</h2>
+            <input type="date" id="gameDate" style="border:none; font-size:16px; font-weight:bold;">
+        </div>
+
         <div class="table-wrapper">
-            <table>
-                <thead><tr><th>玩家</th><th>單位</th><th>買入</th><th>結算</th><th>盈虧</th><th>最終</th><th></th></tr></thead>
+            <table id="inputTable">
+                <thead>
+                    <tr class="hide-in-screenshot"><th>玩家</th><th>單位</th><th>買入</th><th>結算</th><th>盈虧</th><th>最終</th><th></th></tr>
+                    <tr class="only-show-screenshot" style="display:none;"><th>排名</th><th>玩家</th><th>最終得分</th></tr>
+                </thead>
                 <tbody id="tableBody"></tbody>
             </table>
         </div>
-        <div class="mini-balance-bar">
+
+        <div class="mini-balance-bar hide-in-screenshot">
             <div>差距: <span id="chipDiff" style="color:#63b3ed; font-weight:bold;">0</span></div>
-            <button id="saveBtn" class="btn btn-confirm" onclick="confirmSave()">💾 儲存到雲端</button>
+            <div>
+                <button id="saveBtn" class="btn btn-confirm" onclick="confirmSave()">💾 儲存到雲端</button>
+                <button class="btn btn-screenshot" onclick="enterScreenshotMode()">📸 截圖模式</button>
+            </div>
         </div>
-        <div style="margin-top:15px; display:flex; justify-content:space-between;">
+        
+        <div class="hide-in-screenshot" style="margin-top:15px; display:flex; justify-content:space-between;">
             <button class="btn btn-add" style="background:#2c3e50; color:white;" onclick="addRow()">+ 新增玩家</button>
             <button class="btn" onclick="resetCurrentTable()">🔄 重置表格</button>
         </div>
+
+        <button id="exitSSBtn" class="btn" style="display:none; position:fixed; bottom:20px; right:20px; background:var(--danger); color:white; z-index:9999;" onclick="exitScreenshotMode()">❌ 退出截圖</button>
     </div>
 
     <div id="bottomArea">
-        <div class="section-header"><h3>🏆 長期總結算 (雲端數據)</h3></div>
+        <div class="section-header"><h3>🏆 長期總結算</h3></div>
         <div class="table-wrapper">
             <table>
                 <thead><tr><th>玩家</th><th>場次</th><th>累計盈虧</th><th>皇冠 👑</th></tr></thead>
@@ -94,22 +119,16 @@
         return JSON.parse(localStorage.getItem('poker_players') || "[]");
     }
 
-    // --- 核心修正：強制刷新邏輯 ---
     function updateAllDropdowns() {
         const selects = document.querySelectorAll('.player-select');
         const masterList = getStoredPlayers();
-        
-        // 紀錄目前每一行已經選了誰
         const selectedValues = Array.from(selects).map(s => s.value);
 
         selects.forEach((select, index) => {
-            const currentSelected = select.value; // 這格目前選的人
+            const currentSelected = select.value;
             let html = `<option value="">-- 請選擇 --</option>`;
-            
             masterList.forEach(name => {
-                // 如果這個名字被別行選走了，就隱藏；但如果是自己這行選的，就保留
                 const isSelectedByOthers = selectedValues.some((val, i) => val === name && i !== index);
-                
                 if (!isSelectedByOthers) {
                     html += `<option value="${name}" ${name === currentSelected ? 'selected' : ''}>${name}</option>`;
                 }
@@ -121,27 +140,28 @@
     function toggleAdminMode() {
         if (prompt("密碼：") === ADMIN_PW) {
             document.getElementById('topArea').style.display = 'block';
-            document.getElementById('adminModeBtn').innerText = "🔒 管理模式中";
+            document.getElementById('adminModeBtn').innerText = "🔒 管理模式";
             updateAllDropdowns();
-        } else { alert("密碼錯誤"); }
+        }
     }
 
     function addRow(prefill = null) {
         const row = document.getElementById('tableBody').insertRow();
-        row.innerHTML = `<td><select class="player-select" onchange="updateAllDropdowns(); saveDraft();"></select></td>
-            <td><input type="number" class="buyin" placeholder="0" oninput="calculate(this)"></td>
-            <td class="chips" style="color:#718096; font-size:14px;">0</td>
-            <td><input type="number" class="endChips" placeholder="0" oninput="calculate(this)"></td>
-            <td class="profit">0</td><td class="final">0</td>
-            <td><span style="cursor:pointer;color:#ccc;font-size:20px;" onclick="this.closest('tr').remove(); updateAllDropdowns(); auditChips(); saveDraft();">✕</span></td>`;
-        
+        row.innerHTML = `
+            <td><select class="player-select" onchange="updateAllDropdowns(); saveDraft();"></select></td>
+            <td class="hide-in-screenshot"><input type="number" class="buyin" placeholder="0" oninput="calculate(this)"></td>
+            <td class="chips hide-in-screenshot" style="color:#718096; font-size:14px;">0</td>
+            <td class="hide-in-screenshot"><input type="number" class="endChips" placeholder="0" oninput="calculate(this)"></td>
+            <td class="profit hide-in-screenshot">0</td>
+            <td class="final">0</td>
+            <td class="hide-in-screenshot"><span style="cursor:pointer;color:#ccc;font-size:20px;" onclick="this.closest('tr').remove(); updateAllDropdowns(); auditChips();">✕</span></td>
+        `;
         if (prefill) {
             row.querySelector('.player-select').value = prefill.name;
             row.querySelector('.buyin').value = prefill.buyin;
             row.querySelector('.endChips').value = prefill.end;
         }
-        
-        updateAllDropdowns(); // 每加一行就刷新一次選單過濾
+        updateAllDropdowns();
         return row;
     }
 
@@ -154,14 +174,13 @@
         const p = (e - bc) / 2;
         const f = p - 100;
         
-        const pCell = row.querySelector('.profit');
-        pCell.innerText = p >= 0 ? p : `(${Math.abs(p)})`;
-        pCell.className = "profit " + (p >= 0 ? "result-pos" : "result-neg");
+        row.querySelector('.profit').innerText = p >= 0 ? p : `(${Math.abs(p)})`;
+        row.querySelector('.profit').className = "profit " + (p >= 0 ? "result-pos" : "result-neg");
         
         const fCell = row.querySelector('.final');
         fCell.innerText = f >= 0 ? f : `(${Math.abs(f)})`;
         fCell.className = "final " + (f >= 0 ? "result-pos" : "result-neg");
-        
+        fCell.setAttribute('data-val', f); // 用於截圖模式排序
         auditChips(); saveDraft();
     }
 
@@ -169,12 +188,47 @@
         let b = 0, e = 0;
         document.querySelectorAll('.chips').forEach(td => b += parseFloat(td.innerText) || 0);
         document.querySelectorAll('.endChips').forEach(i => e += parseFloat(i.value) || 0);
-        const diff = e - b;
-        const el = document.getElementById('chipDiff');
-        el.innerText = diff;
-        el.style.color = (diff === 0) ? "#63b3ed" : "#fc8181";
+        document.getElementById('chipDiff').innerText = e - b;
     }
 
+    function enterScreenshotMode() {
+        const tbody = document.getElementById('tableBody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        
+        // 排序邏輯
+        rows.sort((a, b) => {
+            const valA = parseFloat(a.querySelector('.final').getAttribute('data-val')) || 0;
+            const valB = parseFloat(b.querySelector('.final').getAttribute('data-val')) || 0;
+            return valB - valA;
+        });
+
+        // 清空重放並加皇冠
+        tbody.innerHTML = '';
+        rows.forEach((row, index) => {
+            const name = row.querySelector('.player-select').value;
+            if(!name) return; // 沒選人的不顯示
+            
+            const finalVal = row.querySelector('.final').innerText;
+            const finalClass = row.querySelector('.final').className;
+            
+            const newRow = tbody.insertRow();
+            newRow.innerHTML = `
+                <td style="font-size:24px; font-weight:bold;">${index === 0 ? '👑' : index + 1}</td>
+                <td style="font-size:24px; font-weight:bold;">${name}</td>
+                <td class="${finalClass}" style="font-size:28px !important;">${finalVal}</td>
+            `;
+        });
+
+        document.body.classList.add('screenshot-mode');
+        document.getElementById('exitSSBtn').style.display = 'block';
+        document.getElementById('topTitle').innerText = "🏆 戰報結算";
+    }
+
+    function exitScreenshotMode() {
+        location.reload(); // 最安全的回歸方式
+    }
+
+    // --- 其餘雲端數據邏輯保持不變 ---
     function addPlayerToList() {
         const name = document.getElementById('newName').value.trim();
         if (name) {
@@ -182,8 +236,7 @@
             if (!list.includes(name)) {
                 list.push(name);
                 localStorage.setItem('poker_players', JSON.stringify(list));
-                renderPlayerTags(); 
-                updateAllDropdowns(); // 錄入後立刻讓選單出現新名字
+                renderPlayerTags(); updateAllDropdowns();
             }
         }
         document.getElementById('newName').value = '';
@@ -198,7 +251,7 @@
             const r = await fetch(CLOUD_URL);
             historyData = await r.json();
             renderHistory();
-        } catch(e) { console.error(e); }
+        } catch(e) {}
     }
 
     function renderHistory() {
@@ -255,11 +308,10 @@
     }
 
     function saveDraft() {
-        const data = Array.from(document.querySelectorAll('#tableBody tr')).map(row => ({
-            name: row.querySelector('.player-select').value,
-            buyin: row.querySelector('.buyin').value,
-            end: row.querySelector('.endChips').value
-        }));
+        const data = Array.from(document.querySelectorAll('#tableBody tr')).map(row => {
+            const sel = row.querySelector('.player-select');
+            return sel ? { name: sel.value, buyin: row.querySelector('.buyin').value, end: row.querySelector('.endChips').value } : null;
+        }).filter(x => x !== null);
         localStorage.setItem('poker_draft_v4', JSON.stringify(data));
     }
 
@@ -271,10 +323,11 @@
         const date = document.getElementById('gameDate').value;
         const bid = 'B'+Date.now();
         document.querySelectorAll('#tableBody tr').forEach(r => {
-            const n = r.querySelector('.player-select').value;
-            const sText = r.querySelector('.final').innerText;
-            const s = parseFloat(sText.replace('(','-').replace(')',''));
-            if(n) payload.push({ date, name: n, score: s, batchId: bid });
+            const sel = r.querySelector('.player-select');
+            if(sel && sel.value) {
+                const s = parseFloat(r.querySelector('.final').getAttribute('data-val')) || 0;
+                payload.push({ date, name: sel.value, score: s, batchId: bid });
+            }
         });
         if(!payload.length) return;
         const btn = document.getElementById('saveBtn');
@@ -292,9 +345,7 @@
         if (draft.length > 0) {
             draft.forEach(d => addRow(d));
             document.querySelectorAll('#tableBody tr').forEach(r => calculate(r.querySelector('.buyin')));
-        } else {
-            for(let i=0; i<6; i++) addRow();
-        }
+        } else { for(let i=0; i<6; i++) addRow(); }
         updateAllDropdowns();
     };
 </script>
