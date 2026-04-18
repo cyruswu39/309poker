@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲數據管理系統 v4.4 (專業修正版)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --bg: #f0f2f5;
+        }
+        body { font-family: 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif; padding: 20px; background-color: var(--bg); color: #333; line-height: 1.6; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        
+        /* 名單管理 */
+        .player-manager { background: #f8f9fa; padding: 18px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #edf2f7; }
+        .tag { background: white; color: var(--dark); padding: 5px 12px; border-radius: 20px; border: 1px solid #cbd5e0; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 15px; border-left: 5px solid var(--primary); padding-left: 15px; }
+        .section-header h3 { margin: 0; font-size: 1.25rem; color: var(--dark); }
+
+        /* 表格樣式 */
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 1px solid #edf2f7; }
+        th { background-color: #f1f4f8; color: #4a5568; padding: 14px 10px; font-weight: 600; font-size: 14px; text-align: center; }
+        td { padding: 15px 10px; border-bottom: 1px solid #edf2f7; text-align: center; font-size: 18px; color: #2d3748; }
+        
+        .player-select { font-size: 20px !important; font-weight: 800 !important; color: #1a202c; padding: 10px; border: 2px solid #cbd5e0; border-radius: 8px; width: 100%; cursor: pointer; }
+        
+        .buyin, .endChips { 
+            font-size: 20px !important; 
+            font-weight: bold; 
+            text-align: center; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px;
+            padding: 10px 5px; 
+            width: 100px; 
+        }
+        
+        .profit, .final { font-size: 22px !important; font-weight: 800 !important; font-family: 'Consolas', 'Monaco', monospace; }
+        .result-neg { color: #e53e3e !important; }
+        .result-pos { color: #38a169 !important; }
+
+        /* 底部欄 */
+        .mini-balance-bar { margin-top: 15px; padding: 15px 25px; background: var(--dark); color: white; border-radius: 10px; display: flex; justify-content: flex-end; gap: 20px; font-size: 16px; align-items: center; flex-wrap: wrap; }
+        .balance-val { font-family: 'Consolas', monospace; font-weight: bold; font-size: 20px; margin-left: 6px; color: #63b3ed; }
+
+        /* 按鈕 */
+        .btn { padding: 10px 18px; cursor: pointer; border: none; border-radius: 8px; font-weight: 600; transition: all 0.2s; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-add { background: #ebf8ff; color: var(--primary); }
+        .btn-confirm { background: var(--success); color: white; }
+        .btn-screenshot { background: #805ad5; color: white; }
+
+        /* 截圖模式切換 */
+        .screenshot-switch { display: none; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 10px; background: #edf2f7; border-radius: 10px; }
+        .switch-btn { background: white; color: var(--primary); border: 2px solid var(--primary); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .switch-btn.active { background: var(--primary); color: white; }
+
+        /* 榮譽榜大字報 */
+        #honorTableArea { display: none; }
+        .honor-container { max-width: 500px; margin: 0 auto; }
+        .honor-table { width: 100%; border: none; margin-top: 10px; }
+        .honor-table th { background: none; color: #718096; font-size: 18px; padding: 10px; border-bottom: 2px solid #e2e8f0; text-align: center; }
+        .honor-table td { padding: 20px 10px; border-bottom: 1px solid #f0f0f0; }
+        .honor-rank { font-size: 22px; font-weight: bold; color: #cbd5e0; font-family: 'Consolas', monospace; width: 50px; }
+        .honor-name { font-size: 28px; font-weight: 900; color: var(--dark); text-align: left; padding-left: 15px; }
+        .honor-score { font-size: 36px; font-weight: 900; font-family: 'Consolas', monospace; text-align: right; padding-right: 15px; }
+        .crown { color: var(--warning); font-size: 28px; vertical-align: middle; margin-right: 5px; }
+        .top-player { background-color: #fffdf5; }
+
+        /* 篩選與圖表 */
+        .filter-group { display: flex; align-items: center; gap: 10px; background: #fff; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 15px; flex-wrap: wrap; }
+        .date-input { padding: 8px; border-radius: 6px; border: 1px solid #ddd; font-weight: 600; color: var(--dark); }
+        .chart-container { margin-top: 30px; padding: 20px; background: #fff; border-radius: 16px; border: 1px solid #edf2f7; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+        .modal-content { background: white; margin: 5vh auto; padding: 25px; border-radius: 20px; width: 90%; max-width: 380px; max-height: 85vh; overflow-y: auto; position: relative; }
+        #modalPlayerName { position: sticky; top: -26px; background: white; padding: 15px 0 10px 0; border-bottom: 2px solid var(--primary); z-index: 10; font-size: 24px; font-weight: 900; }
+
+        .hide-in-screenshot { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="topArea">
+        <div class="player-manager hide-in-screenshot">
+            <h3 style="margin-top:0; margin-bottom:12px; font-size:15px; color: #718096;">👤 名單管理</h3>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="newName" placeholder="名稱" style="flex: 1; padding:10px; border-radius:8px; border:1px solid #ddd; font-size:16px;">
+                <button class="btn btn-add" onclick="addPlayerToList()">＋ 新增</button>
+            </div>
+            <div id="playerTags" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;"></div>
+        </div>
+
+        <div class="section-header">
+            <h3 id="tableTitle">當晚遊戲結算表</h3>
+            <div>
+                <button id="screenshotBtn" class="btn btn-screenshot" onclick="toggleScreenshotMode()">📸 截圖模式</button>
+                <input type="date" id="gameDate" style="font-weight: 600; color: var(--primary); padding:10px; border-radius:8px; border:1px solid #ddd; font-size:16px;">
+            </div>
+        </div>
+
+        <div id="screenshotSwitch" class="screenshot-switch">
+            <button id="showFullTableBtn" class="switch-btn active" onclick="switchScreenshotView('full')">顯示詳細表格</button>
+            <button id="showHonorBtn" class="switch-btn" onclick="switchScreenshotView('honor')">👑 顯示榮譽榜 (大字排序)</button>
+        </div>
+
+        <div id="fullTableArea" style="overflow-x: auto;">
+            <table id="pokerTable">
+                <thead>
+                    <tr><th>玩家</th><th>幾多野</th><th>買入籌碼</th><th>結算籌碼</th><th>贏/輸</th><th>最終(含EXP)</th><th class="hide-in-screenshot" style="width: 40px;"></th></tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div id="honorTableArea">
+            <div class="honor-container">
+                <table class="honor-table">
+                    <thead>
+                        <tr><th>排名</th><th style="text-align:left; padding-left:15px;">玩家</th><th style="text-align:right; padding-right:15px;">總結算</th></tr>
+                    </thead>
+                    <tbody id="honorTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mini-balance-bar">
+            <div>差距 <span id="chipDiff" class="balance-val">0</span></div>
+            <div id="balanceStatus" style="font-weight:bold;">等待輸入</div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.2); height: 20px; margin: 0 5px;"></div>
+            <div class="hide-in-screenshot">
+                <button id="saveBtn" class="btn btn-confirm" onclick="confirmSave()">💾 儲存至雲端</button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; display: flex; justify-content: space-between;" class="hide-in-screenshot">
+            <button class="btn btn-add" style="background: var(--dark); color: white;" onclick="addRow()">+ 新增玩家一行</button>
+            <button class="btn" style="background: #edf2f7; color: #4a5568;" onclick="resetCurrentTable()">🔄 重置表格</button>
+        </div>
+    </div>
+
+    <div id="bottomArea" class="hide-in-screenshot">
+        <div class="section-header"><h3>🏆 長期總結算 (雲端)</h3></div>
+        
+        <div class="filter-group">
+            <span style="font-weight: bold; color: #4a5568;">自定義時段：</span>
+            <input type="date" id="startDate" class="date-input" onchange="renderHistory()">
+            <span style="color: #cbd5e0;">至</span>
+            <input type="date" id="endDate" class="date-input" onchange="renderHistory()">
+            <button class="btn btn-add" style="font-size: 12px;" onclick="resetFilter()">全部數據</button>
+        </div>
+
+        <table id="historyTable">
+            <thead><tr><th>玩家</th><th>場次</th><th>累計盈虧</th><th>皇冠 👑</th></tr></thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+
+        <div class="chart-container">
+            <h3 style="margin-top:0; font-size:16px; color:var(--dark);">核心玩家累計走勢 (參賽 7 次或以上)</h3>
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="playerModal" class="modal" onclick="if(event.target == this) closeModal()">
+    <div class="modal-content">
+        <span style="position: absolute; right: 20px; top: 20px; cursor:pointer; color: #a0aec0; z-index: 11;" onclick="closeModal()">✕</span>
+        <h3 id="modalPlayerName"></h3>
+        <table style="margin-top: 10px; border: none;">
+            <tbody id="modalTableBody" style="font-family: 'Consolas', monospace;"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const CLOUD_URL = "https://script.google.com/macros/s/AKfycbzNuSQJ2ZmyTmnt-1G2bfYwtcVdXcD5iVvULkSYnsij3wJfs6UOQKCgWJvan6bqwByl/exec";
+    let masterPlayerList = JSON.parse(localStorage.getItem('poker_players')) || [];
+    let historyData = []; 
+    let isScreenshotMode = false;
+    let trendChart = null;
+    let playerColors = {};
+
+    document.getElementById('gameDate').valueAsDate = new Date();
+
+    function getColor(name) {
+        if (playerColors[name]) return playerColors[name];
+        const colors = ['#3498db', '#e74c3c', '#27ae60', '#f39c12', '#9b59b6', '#1abc9c', '#d35400', '#2c3e50', '#8e44ad', '#c0392b'];
+        const index = Object.keys(playerColors).length % colors.length;
+        playerColors[name] = colors[index];
+        return playerColors[name];
+    }
+
+    function saveDraft() {
+        const rows = [];
+        document.querySelectorAll('#tableBody tr').forEach(row => {
+            const name = row.querySelector('.player-select').value;
+            const buyin = row.querySelector('.buyin').value;
+            const end = row.querySelector('.endChips').value;
+            rows.push({ name, buyin, end });
+        });
+        localStorage.setItem('poker_draft_v4', JSON.stringify(rows));
+    }
+
+    function loadDraft() {
+        const draft = JSON.parse(localStorage.getItem('poker_draft_v4'));
+        if (draft && draft.length > 0) {
+            document.getElementById('tableBody').innerHTML = '';
+            draft.forEach(d => {
+                const row = addRow();
+                row.querySelector('.player-select').value = d.name;
+                row.querySelector('.buyin').value = d.buyin;
+                row.querySelector('.endChips').value = d.end;
+                calculate(row.querySelector('.buyin'));
+            });
+            updateAllDropdowns();
+        } else {
+            for(let i=0; i<6; i++) addRow();
+        }
+    }
+
+    function resetCurrentTable() {
+        if(confirm("確定要清空目前表格嗎？")) {
+            localStorage.removeItem('poker_draft_v4');
+            location.reload();
+        }
+    }
+
+    function confirmSave() {
+        const diff = parseFloat(document.getElementById('chipDiff').innerText);
+        if (diff !== 0) {
+            if (!confirm(`⚠️ 目前籌碼差距為 ${diff}，尚未平盤！\n確定要強制儲存嗎？`)) return;
+        } else {
+            if (!confirm("確定要同步今日數據到雲端嗎？")) return;
+        }
+        saveData();
+    }
+
+    function updateAllDropdowns() {
+        const selects = document.querySelectorAll('.player-select');
+        const selectedNames = Array.from(selects).map(s => s.value).filter(v => v);
+        selects.forEach(select => {
+            const currentVal = select.value;
+            let optHTML = `<option value="">-- 請選擇 --</option>`;
+            masterPlayerList.forEach(name => {
+                const isTaken = selectedNames.includes(name) && name !== currentVal;
+                if (!isTaken) optHTML += `<option value="${name}" ${name === currentVal ? 'selected' : ''}>${name}</option>`;
+            });
+            select.innerHTML = optHTML;
+        });
+    }
+
+    function toggleScreenshotMode() {
+        isScreenshotMode = !isScreenshotMode;
+        const elementsToHide = document.querySelectorAll('.hide-in-screenshot, .player-manager, #bottomArea');
+        elementsToHide.forEach(el => el.style.display = isScreenshotMode ? 'none' : 'block');
+        document.getElementById('screenshotSwitch').style.display = isScreenshotMode ? 'flex' : 'none';
+        const btn = document.getElementById('screenshotBtn');
+        btn.innerText = isScreenshotMode ? "🔙 退出" : "📸 截圖模式";
+        btn.style.background = isScreenshotMode ? "#718096" : "#805ad5";
+        if (isScreenshotMode) switchScreenshotView('full');
+    }
+
+    function switchScreenshotView(viewType) {
+        const fullTable = document.getElementById('fullTableArea');
+        const honorTable = document.getElementById('honorTableArea');
+        const fullBtn = document.getElementById('showFullTableBtn');
+        const honorBtn = document.getElementById('showHonorBtn');
+        const title = document.getElementById('tableTitle');
+
+        if (viewType === 'full') {
+            fullTable.style.display = 'block';
+            honorTable.style.display = 'none';
+            fullBtn.classList.add('active');
+            honorBtn.classList.remove('active');
+            title.innerText = "當晚遊戲結算表";
+        } else {
+            generateHonorReport();
+            fullTable.style.display = 'none';
+            honorTable.style.display = 'block';
+            fullBtn.classList.remove('active');
+            honorBtn.classList.add('active');
+            title.innerText = document.getElementById('gameDate').value + " 戰報榮譽榜";
+        }
+    }
+
+    // --- 修正後的榮譽榜邏輯 ---
+    function generateHonorReport() {
+        const rows = document.querySelectorAll('#tableBody tr');
+        const data = [];
+        let maxScore = -Infinity;
+        rows.forEach(row => {
+            const name = row.querySelector('.player-select').value;
+            // 修正：將括號顯示格式 "(100)" 轉回數值 "-100"
+            let scoreText = row.querySelector('.final').innerText;
+            let score = parseFloat(scoreText.replace('(', '-').replace(')', '')) || 0;
+            
+            if (name) {
+                data.push({ name, score });
+                if (score > maxScore) maxScore = score;
+            }
+        });
+        data.sort((a, b) => b.score - a.score);
+        const hBody = document.getElementById('honorTableBody');
+        hBody.innerHTML = '';
+        data.forEach((p, index) => {
+            const isWinner = p.score === maxScore && p.score > 0;
+            const row = hBody.insertRow();
+            if (isWinner) row.className = 'top-player';
+            // 修正：輸出時根據正負值套用正確格式
+            const formattedScore = p.score >= 0 ? `+${p.score}` : `(${Math.abs(p.score)})`;
+            row.innerHTML = `
+                <td class="honor-rank">${index + 1}</td>
+                <td class="honor-name">${isWinner ? '<span class="crown">👑</span>' : ''}${p.name}</td>
+                <td class="honor-score ${p.score >= 0 ? 'result-pos' : 'result-neg'}">${formattedScore}</td>
+            `;
+        });
+    }
+
+    function addRow() {
+        const tbody = document.getElementById('tableBody');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><select class="player-select" onchange="updateAllDropdowns(); saveDraft();"></select></td>
+            <td><input type="number" class="buyin" placeholder="單位" oninput="calculate(this)"></td>
+            <td class="chips" style="font-weight:bold; color:#718096; font-size:16px;">0</td>
+            <td><input type="number" class="endChips" placeholder="籌碼" oninput="calculate(this)"></td>
+            <td class="profit">0</td>
+            <td class="final">0</td>
+            <td class="hide-in-screenshot"><span style="cursor:pointer; color:#e2e8f0; font-size:24px; padding:0 10px;" onclick="this.parentElement.parentElement.remove(); updateAllDropdowns(); auditChips(); saveDraft();">✕</span></td>
+        `;
+        updateAllDropdowns();
+        auditChips();
+        return row;
+    }
+
+    function calculate(el) {
+        const row = el.parentElement.parentElement;
+        const buyinUnit = parseFloat(row.querySelector('.buyin').value) || 0;
+        const endChips = parseFloat(row.querySelector('.endChips').value) || 0;
+        const buyinChips = buyinUnit * 2000;
+        row.querySelector('.chips').innerText = buyinChips;
+        const profit = (endChips - buyinChips) / 2;
+        const final = profit - 100;
+        
+        const profitCell = row.querySelector('.profit');
+        profitCell.innerText = profit >= 0 ? profit : `(${Math.abs(profit)})`;
+        profitCell.className = "profit " + (profit >= 0 ? "result-pos" : "result-neg");
+        
+        const finalCell = row.querySelector('.final');
+        finalCell.innerText = final >= 0 ? final : `(${Math.abs(final)})`;
+        finalCell.className = "final " + (final >= 0 ? "result-pos" : "result-neg");
+        
+        auditChips();
+        saveDraft();
+    }
+
+    function auditChips() {
+        let totalB = 0, totalE = 0;
+        document.querySelectorAll('.chips').forEach(td => totalB += parseFloat(td.innerText) || 0);
+        document.querySelectorAll('.endChips').forEach(input => totalE += parseFloat(input.value) || 0);
+        const d = totalE - totalB;
+        const diffEl = document.getElementById('chipDiff');
+        diffEl.innerText = d;
+        diffEl.style.color = (d === 0) ? "#63b3ed" : "#fc8181";
+        document.getElementById('balanceStatus').innerText = (totalB > 0 && d === 0) ? "✅ 已平盤" : (totalB > 0 ? "❌ 未平" : "等待輸入");
+    }
+
+    function addPlayerToList() {
+        const name = document.getElementById('newName').value.trim();
+        if (name && !masterPlayerList.includes(name)) {
+            masterPlayerList.push(name);
+            localStorage.setItem('poker_players', JSON.stringify(masterPlayerList));
+            renderPlayerTags();
+            updateAllDropdowns();
+        }
+        document.getElementById('newName').value = '';
+    }
+
+    function renderPlayerTags() {
+        document.getElementById('playerTags').innerHTML = masterPlayerList.map(name => `<span class="tag">${name}</span>`).join('');
+    }
+
+    async function fetchFromCloud() {
+        try {
+            const response = await fetch(CLOUD_URL);
+            historyData = await response.json();
+            renderHistory();
+        } catch (e) { console.error(e); }
+    }
+
+    function renderHistory() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const data = historyData.filter(d => {
+            const dDate = d.date.split('T')[0];
+            if (start && dDate < start) return false;
+            if (end && dDate > end) return false;
+            return true;
+        });
+        const summary = {};
+        const batches = {};
+        data.forEach(item => {
+            if (!summary[item.name]) summary[item.name] = { count: 0, total: 0 };
+            summary[item.name].count++;
+            summary[item.name].total += parseFloat(item.score);
+            if (!batches[item.batchId]) batches[item.batchId] = [];
+            batches[item.batchId].push(item);
+        });
+        const crowns = {};
+        Object.values(batches).forEach(pList => {
+            let max = Math.max(...pList.map(p => parseFloat(p.score)));
+            if (max > 0) pList.forEach(p => { if (parseFloat(p.score) === max) crowns[p.name] = (crowns[p.name] || 0) + 1; });
+        });
+        const sorted = Object.keys(summary).sort((a, b) => summary[b].total - summary[a].total);
+        const hBody = document.getElementById('historyBody');
+        hBody.innerHTML = '';
+        sorted.forEach(name => {
+            const row = hBody.insertRow();
+            const t = summary[name].total;
+            const c = crowns[name] || 0;
+            const formattedTotal = t >= 0 ? t.toFixed(0) : `(${Math.abs(t).toFixed(0)})`;
+            row.innerHTML = `
+                <td style="color:var(--primary); font-weight:bold; cursor:pointer;" onclick="showPlayerDetail('${name}')">${name}</td>
+                <td>${summary[name].count}</td>
+                <td class="${t >= 0 ? 'result-pos' : 'result-neg'}">${formattedTotal}</td>
+                <td style="color:var(--warning); font-size:18px;">${c > 0 ? '👑 ' + c : '-'}</td>
+            `;
+        });
+        updateTrendChart(data);
+    }
+
+    function updateTrendChart(filteredData) {
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        const dates = [...new Set(filteredData.map(d => d.date.split('T')[0]))].sort();
+        const totalCounts = {};
+        historyData.forEach(d => totalCounts[d.name] = (totalCounts[d.name] || 0) + 1);
+        const corePlayers = Object.keys(totalCounts).filter(name => totalCounts[name] >= 7);
+        const datasets = corePlayers.map(name => {
+            let cumulative = 0;
+            const dataPoints = dates.map(date => {
+                const record = filteredData.find(d => d.name === name && d.date.split('T')[0] === date);
+                if (record) cumulative += parseFloat(record.score);
+                return cumulative;
+            });
+            const color = getColor(name);
+            return {
+                label: name, data: dataPoints, borderColor: color, backgroundColor: color, fill: false, tension: 0.2, pointRadius: 4
+            };
+        });
+        if (trendChart) trendChart.destroy();
+        trendChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: dates, datasets: datasets },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 12 } } } },
+                scales: {
+                    y: { grid: { color: '#f0f0f0' }, title: { display: true, text: '累計盈虧' } },
+                    x: { ticks: { maxRotation: 45, minRotation: 45 } }
+                }
+            }
+        });
+    }
+
+    function showPlayerDetail(name) {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const modalTableBody = document.getElementById('modalTableBody');
+        document.getElementById('modalPlayerName').innerText = name;
+        modalTableBody.innerHTML = '';
+        const filtered = historyData.filter(h => {
+            if (h.name !== name) return false;
+            const dDate = h.date.split('T')[0];
+            if (start && dDate < start) return false;
+            if (end && dDate > end) return false;
+            return true;
+        }).sort((a, b) => new Date(b.date) - new Date(a.date));
+        filtered.forEach(r => {
+            const row = modalTableBody.insertRow();
+            const score = parseFloat(r.score);
+            const formatted = score >= 0 ? `+${score}` : `(${Math.abs(score)})`;
+            row.innerHTML = `<td style="text-align:left; border:none; padding:8px 0;">${r.date.split('T')[0]}</td><td class="${score >= 0 ? 'result-pos' : 'result-neg'}" style="text-align:right; border:none; padding:8px 0; font-weight:bold;">${formatted}</td>`;
+        });
+        document.getElementById('playerModal').style.display = "block";
+    }
+
+    function closeModal() { document.getElementById('playerModal').style.display = "none"; }
+    function resetFilter() { document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; renderHistory(); }
+
+    async function saveData() {
+        const rows = document.querySelectorAll('#tableBody tr');
+        const date = document.getElementById('gameDate').value;
+        const batchId = 'B' + Date.now();
+        const payload = [];
+        rows.forEach(row => {
+            const n = row.querySelector('.player-select').value;
+            let sRaw = row.querySelector('.final').innerText.replace('(', '-').replace(')', '');
+            const s = parseFloat(sRaw);
+            if (n) payload.push({ date, name: n, score: s, batchId });
+        });
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = true;
+        saveBtn.innerText = "⏳ 同步中...";
+        try {
+            await fetch(CLOUD_URL, { method: "POST", body: JSON.stringify(payload) });
+            alert("✅ 數據同步成功！");
+            localStorage.removeItem('poker_draft_v4');
+            location.reload(); 
+        } catch (e) { 
+            alert("❌ 儲存失敗，請檢查網路。"); 
+            saveBtn.disabled = false;
+            saveBtn.innerText = "💾 儲存至雲端";
+        } 
+    }
+
+    window.onload = () => { renderPlayerTags(); fetchFromCloud(); loadDraft(); };
+</script>
+</body>
+</html>
